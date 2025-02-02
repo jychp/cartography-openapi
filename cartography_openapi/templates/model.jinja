@@ -1,0 +1,59 @@
+from dataclasses import dataclass
+
+from cartography.models.core.common import PropertyRef
+from cartography.models.core.nodes import CartographyNodeProperties
+from cartography.models.core.nodes import CartographyNodeSchema
+from cartography.models.core.relationships import CartographyRelProperties
+from cartography.models.core.relationships import CartographyRelSchema
+from cartography.models.core.relationships import LinkDirection
+from cartography.models.core.relationships import make_target_node_matcher
+from cartography.models.core.relationships import OtherRelationships
+from cartography.models.core.relationships import TargetNodeMatcher
+
+
+@dataclass(frozen=True)
+class {{ entity.node_name }}NodeProperties(CartographyNodeProperties):
+    {% for field_name, remote_name in entity.fields.items() -%}
+    {{ field_name }}: PropertyRef = PropertyRef('{{ remote_name }}')
+    {% endfor -%}
+    lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
+
+
+{% if entity.parent_entity %}
+@dataclass(frozen=True)
+class {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties(CartographyRelProperties):
+    lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
+
+
+@dataclass(frozen=True)
+# (:{{ entity.node_name }})-[:RESOURCE]->(:{{ entity.parent_entity.node_name }})
+class {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel(CartographyRelSchema):
+    target_node_label: str = '{{ entity.parent_entity.node_name }}'
+    target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
+        {'id': PropertyRef('{{ entity.parent_entity.name|lower}}_id', set_in_kwargs=True)},
+    )
+    direction: LinkDirection = LinkDirection.OUTWARD
+    rel_label: str = "RESOURCE"
+    properties: {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties = {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties()
+{%- endif %}
+
+
+# TODO: Add other links
+
+
+@dataclass(frozen=True)
+class {{ entity.node_class }}(CartographyNodeSchema):
+    label: str = '{{ entity.node_name }}'
+    properties: {{ entity.node_name }}NodeProperties = {{ entity.node_name }}NodeProperties()
+    {%- if entity.parent_entity %}
+    sub_resource_relationship: {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel = {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel()
+    {%- endif %}
+    {%- if entity.links|length > 1 %}
+    other_relationships: OtherRelationships = OtherRelationships(
+        [
+    {%- for link in entity.links %}
+            {{ entity.node_name}}To{{ link.parent.name }}Rel(),
+    {%- endfor %}
+        ],
+    )
+    {%- endif %}

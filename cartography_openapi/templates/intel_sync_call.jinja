@@ -1,0 +1,13 @@
+    {% if entity.children_entities|length > 0 %}
+    for {{ entity.name|lower}} in cartography.intel.{{ entity._module.name|lower}}.{{ entity.name|lower}}s.sync(
+    {%- else %}
+    cartography.intel.{{ entity._module.name|lower}}.{{ entity.name|lower}}s.sync(
+    {%- endif %}
+        neo4j_session,
+        api_session,
+        {%- for arg in entity.needed_kwargs.values() %}
+        {{ arg.arg_name }}={{ arg.dict_name }},
+        {%- endfor %}
+        config.update_tag,
+        common_job_parameters,
+    ){% if entity.children_entities|length > 0 %}:{% endif %}

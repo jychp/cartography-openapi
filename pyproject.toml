@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "cartography-openapi"
+version = "0.1.0"
+description = "A intel plugin builder for cartogaphy for API supporting OpenAPI."
+authors = ["Jeremy Chapeau <jeremy.chapeau@gmail.com>"]
+readme = "README.md"
+packages = [{include = "cartography_openapi"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+loguru = "^0.7.3"
+jinja2 = "^3.1.5"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+pre-commit = "^4.0.1"
+pytest-cov = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+exclude= '^examples/'
