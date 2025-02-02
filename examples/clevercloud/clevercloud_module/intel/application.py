@@ -10,7 +10,7 @@ from requests import Session
 
 from cartography.client.core.tx import load
 from cartography.graph.job import GraphJob
-from cartography.models.{{ entity._module.name|lower }}.{{ entity.name|lower }} import {{ entity.node_class }}
+from cartography.models.clevercloud.application import CleverCloudApplicationSchema
 from cartography.util import timeit
 
 
@@ -23,27 +23,21 @@ _TIMEOUT = (60, 60)
 def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
-    {%- for arg in entity.needed_kwargs.values() %}
-    {{ arg.arg_name }},
-    {%- endfor %}
+    organization_id,
     update_tag: int,
     common_job_parameters: Dict[str, Any],
 ) -> List[Dict]:
-    {{ entity.name|lower}}s = get(
+    applications = get(
         api_session,
         common_job_parameters['BASE_URL'],
-        {%- for arg in entity.needed_kwargs.values() %}
-        {{ arg.arg_name }},
-        {%- endfor %}
+        organization_id,
     )
     # FIXME: You can configure here a transform operation
-    # formated_{{ entity.name|lower}}s = transform({{ entity.name|lower}}s)
-    load_{{ entity.name|lower}}s(
+    # formated_applications = transform(applications)
+    load_applications(
         neo4j_session,
-        {{ entity.name|lower}}s,  # FIXME: replace with `formated_{{ entity.name|lower}}s` if your added a transform step
-        {%- for arg in entity.needed_kwargs.values() %}
-        {{ arg.arg_name }},
-        {%- endfor %}
+        applications,  # FIXME: replace with `formated_applications` if your added a transform step
+        organization_id,
         update_tag)
     cleanup(neo4j_session, common_job_parameters)
 
@@ -51,44 +45,36 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    {%- for arg in entity.needed_kwargs.values() %}
-    {{ arg.arg_name }},
-    {%- endfor %}
+    organization_id,
 ) -> Dict[str, Any]:
     # FIXME: You have to handle pagination if needed
     req = api_session.get(
-        "{base_url}{{ entity.enumeration_path.path }}".format(
+        "{base_url}/organisations/{id}/applications".format(
             base_url=base_url,
-        {%- for k, v in entity.needed_kwargs.items() %}
-            {{ k }}={{ v.arg_name }},
-        {%- endfor %}
+            id=organization_id,
         ),
         timeout=_TIMEOUT
     )
     req.raise_for_status()
     return req.json()
 
-def load_{{ entity.name|lower}}s(
+def load_applications(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    {%- for arg in entity.needed_kwargs.values() %}
-    {{ arg.arg_name }},
-    {%- endfor %}
+    organization_id,
     update_tag: int,
 ) -> None:
     load(
         neo4j_session,
-        {{ entity.node_class }}(),
+        CleverCloudApplicationSchema(),
         data,
         lastupdated=update_tag,
-        {%- for arg in entity.needed_kwargs.values() %}
-        {{arg.arg_name}}={{ arg.arg_name }},
-        {%- endfor %}
+        organization_id=organization_id,
     )
 
 
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
-        {{ entity.node_class }}(),
+        CleverCloudApplicationSchema(),
         common_job_parameters
     ).run(neo4j_session)

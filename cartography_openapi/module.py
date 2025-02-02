@@ -54,7 +54,7 @@ class Module:
                 # Skip entities that are not the root of the tree
                 if entity.parent_entity is not None:
                     continue
-                content += entity.export_intel() + '\n'
+                content += entity.export_sync_call() + '\n'
             f.write(content)
         # Create entity files
         for entity in self.entities.values():

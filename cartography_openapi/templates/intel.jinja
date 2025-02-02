@@ -29,15 +29,13 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
 
 
     # Create requests sessions
-    client_session = requests.session()
+    api_session = requests.session()
     # FIXME: Configure the authentication
-    client.headers.update(
+    api_session.headers.update(
         {'X-Api-Key': config.{{ module.name|lower}}_apikey}
     )
 
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
-        "BASE_URL": {{ module.server_url }},
+        "BASE_URL": "{{ module.server_url }}",
     }
-
-    # WIP: Add call to sync
