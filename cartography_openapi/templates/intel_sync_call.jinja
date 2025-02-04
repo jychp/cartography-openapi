@@ -5,7 +5,7 @@
     {%- endif %}
         neo4j_session,
         api_session,
-        {%- for arg in entity.needed_kwargs.values() %}
+        {%- for arg in entity.needed_params.values() %}
         {{ arg.arg_name }}={{ arg.dict_name }},
         {%- endfor %}
         config.update_tag,

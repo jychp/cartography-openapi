@@ -12,7 +12,7 @@ def main() -> None:
     parser.add_argument(
         '-v',
         '--verbose',
-        help="Display debug level messsages",
+        help="Display DEBUG level messsages",
         action='store_true',
     )
     parser.add_argument(
@@ -70,7 +70,7 @@ def main() -> None:
             remote_name = element
             local_name = None
         components_to_models[remote_name] = local_name
-    if openapi_parser.build_models(**components_to_models):
+    if openapi_parser.build_module(**components_to_models):
         openapi_parser.export(args.output)
 
 

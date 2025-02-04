@@ -10,7 +10,31 @@ from cartography_openapi.path import Path
 
 
 class OpenAPIParser:
-    # DOC
+    """ Parser for OpenAPI specs.
+
+    The OpenAPIParser class is used to parse an OpenAPI spec and generate models from it.
+    The parser can load the spec from a file or download it from a URL.
+    Some paths can be ignored by providing a list of paths to ignore (eg. '/health*' or '/ping').
+
+    Args:
+        name (str): The name of the API (and of the new intel Module).
+        url (str): The URL of the OpenAPI spec. (default: None)
+        file (str): The path to the OpenAPI spec file. (default: None)
+        ignored_path (list[str]): List of paths to ignore. (default: None)
+
+    Raises:
+        ValueError: If no file or URL is provided.
+
+    Attributes:
+        name (str): The name of the API.
+        checklist (list[str]): The list of warnings and errors generated during the parsing.
+        module (Module): The intel Module generated from the OpenAPI spec.
+        components (dict[str, Component]): The components of the OpenAPI spec.
+        component_to_paths (dict[str, list[Path]]): The paths that return a given component.
+        _ignore_paths (list[str]): The paths to ignore.
+        _ignore_partial_paths (list[str]): The partial paths to ignore.
+    """
+
     def __init__(
             self, name: str,
             url: str | None = None,
@@ -34,6 +58,8 @@ class OpenAPIParser:
             self._load(file)
         elif url:
             self._download(url)
+        else:
+            raise ValueError('You must provide a file or a URL to load the OpenAPI spec')
 
     def _download(self, url: str) -> None:
         # TODO: Download the OpenAPI spec from the URL
@@ -96,13 +122,22 @@ class OpenAPIParser:
                 self.component_to_paths[path_obj.returned_component].append(path_obj)
 
         logger.info(
-            'OpenAPI spec parsed successfully, found {} resolvable components.'.format(
-                len(self.component_to_paths),
-            ),
+            "OpenAPI spec parsed successfully, "
+            f"found {len(self.component_to_paths)} resolvable components.",
         )
 
-    def build_models(self, **kwargs) -> bool:
-        # DOC
+    def build_module(self, **kwargs) -> bool:
+        """ Build the cartography module from the ingested OpenAPI spec.
+
+        This method builds the cartography module from the ingested OpenAPI spec.
+        It creates the entities from the components and the paths.
+
+        Args:
+            **kwargs: The mapping between components and entities.
+
+        Returns:
+            bool: True if the module has been built successfully, False otherwise.
+        """
         consolidated_components: list[Component] = []
 
         for component_name, entity_name in kwargs.items():
@@ -131,7 +166,7 @@ class OpenAPIParser:
                 for c in consolidated_components:
                     if c.direct_path is None:
                         continue
-                    if component.direct_path.is_sub_path(c.direct_path, 1):
+                    if component.direct_path.is_sub_path_of(c.direct_path, 1):
                         component.parent_component = c
                         logger.debug(f'Parent component for {component_name}: {component.parent_component.name}')
                         break
@@ -148,5 +183,11 @@ class OpenAPIParser:
         return True
 
     def export(self, output_dir: str) -> None:
-        # DOC
+        """ Export the module to the output directory.
+
+        see: cartography_openapi.module.Module.export
+
+        Args:
+            output_dir (str): The output directory.
+        """
         self.module.export(output_dir)

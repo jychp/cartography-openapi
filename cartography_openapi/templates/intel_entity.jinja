@@ -23,7 +23,7 @@ _TIMEOUT = (60, 60)
 def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
-    {%- for arg in entity.needed_kwargs.values() %}
+    {%- for arg in entity.needed_params.values() %}
     {{ arg.arg_name }},
     {%- endfor %}
     update_tag: int,
@@ -32,7 +32,7 @@ def sync(
     {{ entity.name|lower}}s = get(
         api_session,
         common_job_parameters['BASE_URL'],
-        {%- for arg in entity.needed_kwargs.values() %}
+        {%- for arg in entity.needed_params.values() %}
         {{ arg.arg_name }},
         {%- endfor %}
     )
@@ -41,7 +41,7 @@ def sync(
     load_{{ entity.name|lower}}s(
         neo4j_session,
         {{ entity.name|lower}}s,  # FIXME: replace with `formated_{{ entity.name|lower}}s` if your added a transform step
-        {%- for arg in entity.needed_kwargs.values() %}
+        {%- for arg in entity.needed_params.values() %}
         {{ arg.arg_name }},
         {%- endfor %}
         update_tag)
@@ -51,7 +51,7 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    {%- for arg in entity.needed_kwargs.values() %}
+    {%- for arg in entity.needed_params.values() %}
     {{ arg.arg_name }},
     {%- endfor %}
 ) -> Dict[str, Any]:
@@ -59,7 +59,7 @@ def get(
     req = api_session.get(
         "{base_url}{{ entity.enumeration_path.path }}".format(
             base_url=base_url,
-        {%- for k, v in entity.needed_kwargs.items() %}
+        {%- for k, v in entity.needed_params.items() %}
             {{ k }}={{ v.arg_name }},
         {%- endfor %}
         ),
@@ -71,7 +71,7 @@ def get(
 def load_{{ entity.name|lower}}s(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    {%- for arg in entity.needed_kwargs.values() %}
+    {%- for arg in entity.needed_params.values() %}
     {{ arg.arg_name }},
     {%- endfor %}
     update_tag: int,
@@ -81,7 +81,7 @@ def load_{{ entity.name|lower}}s(
         {{ entity.node_class }}(),
         data,
         lastupdated=update_tag,
-        {%- for arg in entity.needed_kwargs.values() %}
+        {%- for arg in entity.needed_params.values() %}
         {{arg.arg_name}}={{ arg.arg_name }},
         {%- endfor %}
     )

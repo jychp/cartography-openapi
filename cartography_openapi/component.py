@@ -8,7 +8,28 @@ from cartography_openapi.path import Path
 
 
 class Component:
-    # DOC
+    """ Represents a component of the OpenAPI schema.
+
+    The component is a part of the OpenAPI schema that defines a reusable schema object.
+    This class is used to store the properties of the component and the relations between components.
+    Relations are guessed by looking at the paths that return the linked component.
+
+    See: https://swagger.io/specification/#components-object
+
+    Args:
+        name (str): The name of the component.
+        schema (dict[str, Any]): The schema of the component.
+
+    Attributes:
+        name (str): The name of the component.
+        properties (OrderedDict[str, dict[str, Any]]): The properties of the component.
+        relations (OrderedDict[str, dict[str, Any]]): The relations of the component
+            (properties that return an other component).
+        direct_path (Path): The direct path of the component.
+        enumeration_path (Path): The enumeration path of the component.
+        parent_component (Component): The parent component of the component.
+    """
+
     def __init__(self, name: str, schema: dict[str, Any]) -> None:
         self.name = name
         self.properties: OrderedDict[str, dict[str, Any]] = OrderedDict()
@@ -20,7 +41,21 @@ class Component:
 
     @property
     def path_id(self) -> str:
-        # DOC
+        """ Returns the parameter to use in the path to identify the component.
+
+        This method returns the parameter to use in the path to identify the component.
+        The parameter is the first parameter that is in the direct path but not in the enumeration path.
+
+        Example:
+            If the direct path is '/groups/{group_id}' and the enumeration path is '/groups',
+            the method will return 'group_id'.
+
+        Raises:
+            ValueError: If the direct path or the enumeration path is not set.
+
+        Returns:
+            str: The parameter to use in the path to identify the component.
+        """
         if self.direct_path is None or self.enumeration_path is None:
             raise ValueError('Paths not set')
         for p in self.direct_path.path_params:
@@ -52,7 +87,6 @@ class Component:
                 self.properties[prop_name] = parsed_property
 
     def _name_to_field(self, name: str) -> str:
-        # DOC
         # Replace consecutive uppercase by a single uppercase
         local_name = re.sub(r'([A-Z]+)', lambda m: m.group(1).capitalize(), name)
         # Replace camelCase by snake_case
@@ -60,7 +94,22 @@ class Component:
         return local_name
 
     def set_enumeration_path(self, path: Path, components: list['Component']) -> bool:
-        # DOC
+        """ Set the enumeration path of the component.
+
+        The enumeration path is the path that is used to list all the components of the same type.
+        The method will set the enumeration path if the new path is better than the previous one.
+        Path evaluation is based on the following criteria:
+        - No previous path
+        - Linkable vs non-linkable (the path is a sub-path of the direct path of another component)
+        - The new path is better because it has less parameters
+        - The new path is better because it is shorter (allow to prefer x/groups over x/groups-default)
+
+        Args:
+            path (Path): The path to set as the enumeration path.
+
+        Returns:
+            bool: True if the path has been set as the enumeration path, False otherwise.
+        """
         # Option 1: No previous path
         if self.enumeration_path is None:
             self.enumeration_path = path
@@ -72,9 +121,9 @@ class Component:
         for c in components:
             if not c.direct_path:
                 continue
-            if self.enumeration_path.is_sub_path(c.direct_path):
+            if self.enumeration_path.is_sub_path_of(c.direct_path):
                 is_self_linkable = True
-            if path.is_sub_path(c.direct_path):
+            if path.is_sub_path_of(c.direct_path):
                 is_other_linkable = True
         if is_other_linkable and not is_self_linkable:
             self.enumeration_path = path
@@ -95,7 +144,22 @@ class Component:
         return False
 
     def set_direct_path(self, path: Path, components: list['Component']) -> bool:
-        # DOC
+        """ Set the direct path of the component.
+
+        The direct path is the path that is used to get a single component.
+        The method will set the direct path if the new path is better than the previous one.
+        Path evaluation is based on the following criteria:
+        - No previous path
+        - Linkable vs non-linkable (the path is a sub-path of the direct path of another component)
+        - The new path is better because it has less parameters
+        - The new path is better because it is shorter (allow to prefer x/groups/y over x/groups-default/y)
+
+        Args:
+            path (Path): The path to set as the direct path.
+
+        Returns:
+            bool: True if the path has been set as the direct path, False otherwise.
+        """
         # Option 1: No previous path
         if self.direct_path is None:
             self.direct_path = path
@@ -107,9 +171,9 @@ class Component:
         for c in components:
             if not c.direct_path:
                 continue
-            if self.direct_path.is_sub_path(c.direct_path, 1):
+            if self.direct_path.is_sub_path_of(c.direct_path, 1):
                 is_self_linkable = True
-            if path.is_sub_path(c.direct_path, 1):
+            if path.is_sub_path_of(c.direct_path, 1):
                 is_other_linkable = True
         if is_other_linkable and not is_self_linkable:
             self.direct_path = path
@@ -128,3 +192,6 @@ class Component:
             logger.debug(f"Direct path set to '{path.path}' for {self.name} [shorter path]")
             return True
         return False
+
+    def __repr__(self) -> str:
+        return f'<Component {self.name}>'
