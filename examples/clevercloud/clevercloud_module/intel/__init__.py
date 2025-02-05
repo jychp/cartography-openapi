@@ -38,8 +38,7 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://api.clever-cloud.com/v2",
-    }
-    
+    }    
     for organization in cartography.intel.clevercloud.organizations.sync(
         neo4j_session,
         api_session,

@@ -12,11 +12,26 @@ class SingletonMeta(type):
 
 
 class Checklist(metaclass=SingletonMeta):
-    # DOC
+    """ List of warnings generated during the parsing of the OpenAPI spec.
+
+    The Checklist class is used to store the warnings generated during the parsing of the OpenAPI spec.
+    The checklist is a singleton, so there is only one instance of it.
+
+    Attributes:
+        checklist (list[str]): The list of warnings.
+    """
+
     def __init__(self) -> None:
         self.checklist: list[str] = []
 
     def add_warning(self, warning: str) -> None:
-        # DOC
+        """ Adds a warning to the checklist.
+
+        This method adds a warning to the checklist.
+        A WARNING log is also generated.
+
+        Args:
+            warning (str): The warning to add.
+        """
         self.checklist.append(warning)
         logger.warning(warning)

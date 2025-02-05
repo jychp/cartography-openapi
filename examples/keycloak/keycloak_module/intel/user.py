@@ -47,16 +47,26 @@ def get(
     base_url: str,
     realm_id,
 ) -> Dict[str, Any]:
-    # FIXME: You have to handle pagination if needed
-    req = api_session.get(
-        "{base_url}/admin/realms/{realm}/users".format(
-            base_url=base_url,
-            realm=realm_id,
-        ),
-        timeout=_TIMEOUT
-    )
-    req.raise_for_status()
-    return req.json()
+    results: List[Dict[str, Any]] = []
+    params = {'first': 0, 'max': 25}
+    keep_running: bool = True
+    while keep_running:
+        keep_running = False  # To avoid any infinite loop
+        req = api_session.get(
+            "{base_url}/admin/realms/{realm}/users".format(
+                base_url=base_url,
+                realm=realm_id,
+            ),
+            params=params,
+            timeout=_TIMEOUT
+        )
+        req.raise_for_status()
+        sub_results = req.json()
+        results.extend(sub_results)
+        if len(sub_results) == 25:
+            keep_running = True
+        params['first'] += len(sub_results)
+    return results
 
 def load_users(
     neo4j_session: neo4j.Session,

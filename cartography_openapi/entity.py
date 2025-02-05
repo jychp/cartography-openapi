@@ -188,7 +188,6 @@ class Entity:
             str: the content of the intel python file.
         """
         template = self._jinja_env.get_template("intel_entity.jinja")
-
         return template.render(
             entity=self,
         )
