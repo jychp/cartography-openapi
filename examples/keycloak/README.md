@@ -4,12 +4,12 @@
 
 ### Using local specifications
 ```
-poetry run python3 main.py -v -n Keycloak -f ./example/keycloak/openapi.json RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
+poetry run python3 cartography_openapi -v -n Keycloak -f ./example/keycloak/openapi.json RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
 ```
 
 ### Using remote specifications
 ```
-poetry run python3 main.py -v -n Keycloak -u "https://www.keycloak.org/docs-api/latest/rest-api/openapi.json" RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
+poetry run python3 cartography_openapi -v -n Keycloak -u "https://www.keycloak.org/docs-api/latest/rest-api/openapi.json" RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
 ```
 
 ## Results

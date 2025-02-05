@@ -18,7 +18,6 @@ class Component:
 
     Args:
         name (str): The name of the component.
-        schema (dict[str, Any]): The schema of the component.
 
     Attributes:
         name (str): The name of the component.
@@ -30,11 +29,10 @@ class Component:
         parent_component (Component): The parent component of the component.
     """
 
-    def __init__(self, name: str, schema: dict[str, Any]) -> None:
+    def __init__(self, name: str) -> None:
         self.name = name
         self.properties: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.relations: OrderedDict[str, dict[str, Any]] = OrderedDict()
-        self._from_schema(schema)
         self.direct_path: Path | None = None
         self.enumeration_path: Path | None = None
         self.parent_component: 'Component' | None = None
@@ -63,10 +61,11 @@ class Component:
                 return p
         return '<UNK>'
 
-    def _from_schema(self, schema: dict[str, Any]) -> None:
+    def from_schema(self, schema: dict[str, Any]) -> bool:
+        # DOC
         if schema.get('type', 'object') != 'object':
-            logger.warning(f'Parsing of non-object components not yet implemented ({self.name})')
-            return
+            logger.error(f'Parsing of non-object components not yet implemented ({self.name})')
+            return False
 
         for prop_name, prop_details in schema.get('properties', {}).items():
             parsed_property: dict[str, Any] = {
@@ -85,6 +84,8 @@ class Component:
             else:
                 parsed_property['type'] = prop_details.get('type', 'string')
                 self.properties[prop_name] = parsed_property
+
+        return True
 
     def _name_to_field(self, name: str) -> str:
         # Replace consecutive uppercase by a single uppercase
