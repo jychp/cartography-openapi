@@ -4,6 +4,7 @@ from typing import Any
 import requests
 from loguru import logger
 
+from cartography_openapi.checklist import Checklist
 from cartography_openapi.component import Component
 from cartography_openapi.entity import Entity
 from cartography_openapi.module import Module
@@ -28,7 +29,6 @@ class OpenAPIParser:
 
     Attributes:
         name (str): The name of the API.
-        checklist (list[str]): The list of warnings and errors generated during the parsing.
         module (Module): The intel Module generated from the OpenAPI spec.
         components (dict[str, Component]): The components of the OpenAPI spec.
         component_to_paths (dict[str, list[Path]]): The paths that return a given component.
@@ -83,20 +83,18 @@ class OpenAPIParser:
             return
         self._parse(raw_data)
 
-    def add_warning(self, warning: str) -> None:
-        # DOC
-        self.checklist.append(warning)
-        logger.warning(warning)
-
     def _parse(self, raw_data: dict[str, Any]) -> None:
         # Search for server
         servers = raw_data.get('servers')
         if not servers:
-            self.add_warning('No servers found in the OpenAPI spec, edit the `intel/*.py` files to add the server URL.')
+            Checklist().add_warning(
+                'No servers found in the OpenAPI spec,'
+                'edit the `intel/*.py` files to add the server URL.',
+            )
             self.module.server_url = 'https://localhost'
         else:
             if len(servers) > 1:
-                self.add_warning('Multiple servers found in the OpenAPI spec. Check `intel/*.py` files.')
+                Checklist().add_warning('Multiple servers found in the OpenAPI spec. Check `intel/*.py` files.')
             self.module.server_url = servers[0].get('url')
 
         # Create components
@@ -104,7 +102,6 @@ class OpenAPIParser:
         for component_name, component_schema in components.items():
             component = Component(component_name)
             if not component.from_schema(component_schema):
-                self.add_warning(f'Failed to parse component {component_name}')
                 continue
             self.components[component_name] = component
 
