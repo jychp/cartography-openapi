@@ -1,9 +1,19 @@
-[tool.poetry]
+[project]
 name = "cartography-openapi"
 version = "0.1.0"
 description = "A intel plugin builder for cartogaphy for API supporting OpenAPI."
-authors = ["Jeremy Chapeau <jeremy.chapeau@gmail.com>"]
+authors = [
+    { name = "Jeremy Chapeau", email = "jeremy.chapeau@gmail.com" },
+]
 readme = "README.md"
+license = "Apache-2.0"
+
+[project.urls]
+Homepage = "https://github.com/jychp/cartography-openapi"
+Download = "https://github.com/jychp/cartography-openapi/releases"
+"Bug Report" = "https://github.com/jychp/cartography-openapi/issues"
+
+[tool.poetry]
 packages = [{include = "cartography_openapi"}]
 
 [tool.poetry.dependencies]

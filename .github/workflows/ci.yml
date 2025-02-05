@@ -1,0 +1,65 @@
+name: Build & Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-publish:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up python
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 2.0.1
+
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Get latest tag
+      id: get-latest-tag
+      run: |
+        echo "version=$(git ls-remote --tags --sort=committerdate|sort|head -1|cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
+
+    - name: Get new package version
+      id: new_version
+      run: |
+        export VERSION=$(sed -n "s/^version = \"\(.*\)\"/\1/p" pyproject.toml)
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Check versions
+      run: |
+        if [ "${{ steps.new_version.outputs.version }}" == "${{ steps.get-latest-tag.outputs.version }}" ]; then
+          echo "PyProject version is the same as the latest tag"
+          exit 1
+        fi
+
+    - name: Build package
+      run: poetry build
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        packages-dir: dist/
+
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "dist/"
+        generateReleaseNotes: "true"
+        makeLatest: "true"
+        name: "v${{ steps.new_version.outputs.version }}"
+        tag: "v${{ steps.new_version.outputs.version }}"
