@@ -64,7 +64,7 @@ class Component:
     def from_schema(self, schema: dict[str, Any]) -> bool:
         # DOC
         if schema.get('type', 'object') != 'object':
-            logger.error(f'Parsing of non-object components not yet implemented ({self.name})')
+            logger.debug(f'Parsing of non-object components not yet implemented ({self.name})')
             return False
 
         for prop_name, prop_details in schema.get('properties', {}).items():
@@ -84,7 +84,6 @@ class Component:
             else:
                 parsed_property['type'] = prop_details.get('type', 'string')
                 self.properties[prop_name] = parsed_property
-
         return True
 
     def _name_to_field(self, name: str) -> str:

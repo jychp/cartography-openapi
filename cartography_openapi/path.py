@@ -3,6 +3,8 @@ from typing import Any
 
 from loguru import logger
 
+from cartography_openapi.pagination import Pagination
+
 
 class Path:
     """ Represents a path of the OpenAPI schema.
@@ -23,6 +25,7 @@ class Path:
         query_params (dict[str, Any]): The query parameters of the endpoint.
         returns_array (bool): True if the endpoint returns an array, False otherwise.
         returned_component (str): The name of the component returned by the endpoint.
+        pagination (Pagination): The pagination of the endpoint.
     """
 
     def __init__(self, path: str, get_method: dict[str, Any]) -> None:
@@ -33,17 +36,19 @@ class Path:
         self.returns_array: bool = False
         self.returned_component: str | None = None
         self._from_method(get_method)
+        self.pagination: Pagination | None = None
 
     def _from_method(self, method: dict[str, Any]) -> None:
+        logger.debug(f'Parsing path {self.path}')
         if '200' not in method.get('responses', {}):
-            logger.debug(f'Skipping, no 200 response found for {self.path}')
+            logger.debug('Skipping, no 200 response found')
             return
 
         response_schema = method['responses']['200'].get(
             'content', {},
         ).get('application/json', {}).get('schema')
         if not response_schema:
-            logger.debug(f'Skipping, no response schema found for {self.path}')
+            logger.debug('Skipping, no response schema found')
             return
 
         if response_schema.get('type') == 'array':
@@ -53,7 +58,7 @@ class Path:
             component_name = response_schema.get('$ref')
 
         if not component_name:
-            logger.debug(f'Skipping, no component name found for {self.path}')
+            logger.debug('Skipping, no component name found')
             return
         self.returned_component = component_name.split('/')[-1]
 
@@ -65,12 +70,18 @@ class Path:
             elif param['in'] == 'query':
                 self.query_params[param['name']] = param
             else:
-                logger.warning(f"Unknown parameter type {param['in']} for {param['name']} in {self.path}")
+                logger.debug(f"Unknown parameter type {param['in']} for {param['name']} in {self.path}")
 
         # Sometimes the path parameters are not in the response schema
         if len(self.path_params) == 0:
             for m in re.findall(r'{[a-zA-Z-_0-9]+}', self.path):
                 self.path_params[m[1:-1]] = {}
+
+        # Check for pagination
+        if self.returns_array:
+            for k in Pagination.current_params():
+                if k in self.query_params:
+                    self.pagination = Pagination(self)
 
     def is_sub_path_of(self, other: 'Path', max_args: int = 0) -> bool:
         """ Check if the path is a sub-path of another path.
