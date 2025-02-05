@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+import requests
 from loguru import logger
 
 from cartography_openapi.component import Component
@@ -33,6 +34,7 @@ class OpenAPIParser:
         component_to_paths (dict[str, list[Path]]): The paths that return a given component.
         _ignore_paths (list[str]): The paths to ignore.
         _ignore_partial_paths (list[str]): The partial paths to ignore.
+        _ready (bool): True if the OpenAPI spec has been parsed successfully, False otherwise.
     """
 
     def __init__(
@@ -48,6 +50,7 @@ class OpenAPIParser:
         self.component_to_paths: dict[str, list[Path]] = {}
         self._ignore_paths: list[str] = []
         self._ignore_partial_paths: list[str] = []
+        self._ready = False
         if ignored_path is not None:
             for path in ignored_path:
                 if path.endswith('*'):
@@ -62,8 +65,14 @@ class OpenAPIParser:
             raise ValueError('You must provide a file or a URL to load the OpenAPI spec')
 
     def _download(self, url: str) -> None:
-        # TODO: Download the OpenAPI spec from the URL
-        raise NotImplementedError('Not implemented')
+        try:
+            req = requests.get(url, timeout=30)
+            req.raise_for_status()
+            raw_data = req.json()
+        except requests.RequestException as e:
+            logger.error(f'Failed to download the OpenAPI spec from {url}: {e}')
+            return
+        self._parse(raw_data)
 
     def _load(self, file_path: str) -> None:
         try:
@@ -74,27 +83,30 @@ class OpenAPIParser:
             return
         self._parse(raw_data)
 
+    def add_warning(self, warning: str) -> None:
+        # DOC
+        self.checklist.append(warning)
+        logger.warning(warning)
+
     def _parse(self, raw_data: dict[str, Any]) -> None:
         # Search for server
         servers = raw_data.get('servers')
         if not servers:
-            logger.warning('No servers found in the OpenAPI spec')
-            self.checklist.append(
-                'No servers found in the OpenAPI spec, edit the `intel/*.py` files to add the server URL.',
-            )
+            self.add_warning('No servers found in the OpenAPI spec, edit the `intel/*.py` files to add the server URL.')
             self.module.server_url = 'https://localhost'
         else:
             if len(servers) > 1:
-                logger.warning('Multiple servers found in the OpenAPI spec. Using the first one.')
-                self.checklist.append(
-                    'Multiple servers found in the OpenAPI spec. Check `intel/*.py` files.',
-                )
+                self.add_warning('Multiple servers found in the OpenAPI spec. Check `intel/*.py` files.')
             self.module.server_url = servers[0].get('url')
 
         # Create components
         components = raw_data.get('components', {}).get('schemas', {})
         for component_name, component_schema in components.items():
-            self.components[component_name] = Component(component_name, component_schema)
+            component = Component(component_name)
+            if not component.from_schema(component_schema):
+                self.add_warning(f'Failed to parse component {component_name}')
+                continue
+            self.components[component_name] = component
 
         # Create paths
         paths = raw_data.get('paths', {})
@@ -121,6 +133,11 @@ class OpenAPIParser:
                     self.component_to_paths[path_obj.returned_component] = []
                 self.component_to_paths[path_obj.returned_component].append(path_obj)
 
+        if len(self.components) == 0:
+            logger.error('No components imported from the OpenAPI spec.')
+            return
+
+        self._ready = True
         logger.info(
             "OpenAPI spec parsed successfully, "
             f"found {len(self.component_to_paths)} resolvable components.",
@@ -138,6 +155,9 @@ class OpenAPIParser:
         Returns:
             bool: True if the module has been built successfully, False otherwise.
         """
+        if not self._ready:
+            logger.error('OpenAPI spec not ready, cannot build the module.')
+            return False
         consolidated_components: list[Component] = []
 
         for component_name, entity_name in kwargs.items():
@@ -190,4 +210,7 @@ class OpenAPIParser:
         Args:
             output_dir (str): The output directory.
         """
+        if not self._ready:
+            logger.error('OpenAPI spec not ready, cannot export the module.')
+            return
         self.module.export(output_dir)
