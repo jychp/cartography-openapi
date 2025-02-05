@@ -128,10 +128,11 @@ The following operations must be performed manually:
 ### Known issues & limitations
 
 **cartography-openapi** is a Proof of Concept, and many features are still missing (we are actively working on them):
-- The generated code does not handle pagination for API calls
 - The generated code does not handle authentication for API calls
 - The generated code does not support query parameters, body parameters, or headers
 - The generated code does not manage links to other entities (except for `sub-resource` links)
+- Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
+- List components are not supported
 - Tests are not generated
 - Documentation is not generated
 
@@ -147,7 +148,8 @@ None so far :(
 
 Here are the topics we are working on for upcoming releases:
 
-- [ ] handle pagination
+- [ ] handle API response with dict like `{'users': [], 'count': 12}`
+- [ ] handle API response where list are handled as componenet (ex: UserView, UserListVie)
 - [ ] handle authentication
 - [ ] handle query with mandatory query_param & body_param
 - [ ] handle query with variable param in path

@@ -38,8 +38,7 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://localhost",
-    }
-    
+    }    
     for realm in cartography.intel.keycloak.realms.sync(
         neo4j_session,
         api_session,

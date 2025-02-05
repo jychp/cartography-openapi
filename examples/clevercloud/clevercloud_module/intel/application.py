@@ -47,6 +47,7 @@ def get(
     base_url: str,
     organization_id,
 ) -> Dict[str, Any]:
+    results: List[Dict[str, Any]] = []
     # FIXME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}/organisations/{id}/applications".format(
@@ -56,7 +57,8 @@ def get(
         timeout=_TIMEOUT
     )
     req.raise_for_status()
-    return req.json()
+    results = req.json()
+    return results
 
 def load_applications(
     neo4j_session: neo4j.Session,

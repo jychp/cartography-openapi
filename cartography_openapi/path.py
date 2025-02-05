@@ -35,8 +35,8 @@ class Path:
         self.query_params: dict[str, Any] = {}
         self.returns_array: bool = False
         self.returned_component: str | None = None
-        self._from_method(get_method)
         self.pagination: Pagination | None = None
+        self._from_method(get_method)
 
     def _from_method(self, method: dict[str, Any]) -> None:
         logger.debug(f'Parsing path {self.path}')
@@ -53,6 +53,7 @@ class Path:
 
         if response_schema.get('type') == 'array':
             self.returns_array = True
+            # TODO: Handle dict responses ex: {'users': [], 'count': 10}
             component_name = response_schema.get('items').get('$ref')
         else:
             component_name = response_schema.get('$ref')
@@ -82,6 +83,7 @@ class Path:
             for k in Pagination.current_params():
                 if k in self.query_params:
                     self.pagination = Pagination(self)
+                    break
 
     def is_sub_path_of(self, other: 'Path', max_args: int = 0) -> bool:
         """ Check if the path is a sub-path of another path.

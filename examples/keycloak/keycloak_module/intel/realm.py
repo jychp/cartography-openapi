@@ -43,6 +43,7 @@ def get(
     api_session: requests.Session,
     base_url: str,
 ) -> Dict[str, Any]:
+    results: List[Dict[str, Any]] = []
     # FIXME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}/admin/realms".format(
@@ -51,7 +52,8 @@ def get(
         timeout=_TIMEOUT
     )
     req.raise_for_status()
-    return req.json()
+    results = req.json()
+    return results
 
 def load_realms(
     neo4j_session: neo4j.Session,

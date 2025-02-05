@@ -62,7 +62,17 @@ class Component:
         return '<UNK>'
 
     def from_schema(self, schema: dict[str, Any]) -> bool:
-        # DOC
+        """ Parse the schema of the component.
+
+        This method parses the schema of the component.
+        The method will return False if the schema is not an object.
+
+        Args:
+            schema (dict[str, Any]): The schema of the component.
+
+        Returns:
+            bool: True if the schema has been parsed, False otherwise.
+        """
         if schema.get('type', 'object') != 'object':
             logger.debug(f'Parsing of non-object components not yet implemented ({self.name})')
             return False
