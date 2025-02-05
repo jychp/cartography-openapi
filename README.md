@@ -70,10 +70,15 @@ _See `cartography_openapi.module.Module.export`_
 
 ## Install
 
-Using **cartography-openapi** requires **Poetry** and **Python**.
+### Using pypi
+
+```pip3 install cartography-openapi```
+
+### Using poetry
 
 ```
 poetry install
+poetry run python3 cartography_openapi
 ```
 
 ## Usage
