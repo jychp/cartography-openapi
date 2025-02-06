@@ -13,9 +13,9 @@ from cartography.models.core.relationships import TargetNodeMatcher
 
 @dataclass(frozen=True)
 class {{ entity.node_name }}NodeProperties(CartographyNodeProperties):
-    {% for field_name, remote_name in entity.fields.items() -%}
+    {% for field_name, remote_name in entity.fields.items() %}
     {{ field_name }}: PropertyRef = PropertyRef('{{ remote_name }}')
-    {% endfor -%}
+    {% endfor %}
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
@@ -35,7 +35,7 @@ class {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel(CartographyRelSc
     direction: LinkDirection = LinkDirection.OUTWARD
     rel_label: str = "RESOURCE"
     properties: {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties = {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties()
-{%- endif %}
+{% endif %}
 
 
 # TODO: Add other links
@@ -45,15 +45,15 @@ class {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel(CartographyRelSc
 class {{ entity.node_class }}(CartographyNodeSchema):
     label: str = '{{ entity.node_name }}'
     properties: {{ entity.node_name }}NodeProperties = {{ entity.node_name }}NodeProperties()
-    {%- if entity.parent_entity %}
+    {% if entity.parent_entity %}
     sub_resource_relationship: {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel = {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel()
-    {%- endif %}
-    {%- if entity.links|length > 1 %}
+    {% endif %}
+    {% if entity.links|length > 1 %}
     other_relationships: OtherRelationships = OtherRelationships(
         [
-    {%- for link in entity.links %}
+    {% for link in entity.links %}
             {{ entity.node_name}}To{{ link.parent.name }}Rel(),
-    {%- endfor %}
+    {% endfor %}
         ],
     )
-    {%- endif %}
+    {% endif %}

@@ -127,6 +127,7 @@ The following operations must be performed manually:
 - Add the necessary configuration keys in `cartography/config.py`
 - Add the required parameters in `cartography/cli.py`
 - Import your module in `cartography/sync.py`
+- Update the cartography `README.md`
 
 ### Known issues & limitations
 
@@ -156,4 +157,3 @@ Here are the topics we are working on for upcoming releases:
 - [ ] handle "other_links"
 - [ ] generate Cartography data for tests
 - [ ] generate Cartography config
-- [ ] Generate PR text with checklist

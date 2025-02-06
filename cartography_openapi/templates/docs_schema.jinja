@@ -1,8 +1,9 @@
 ## {{ module.name }} Schema
 
 .. _{{ module.name|lower }}_schema:
-
 {% for entity in module.entities.values() %}
+
+
 ### {{ entity.name }}
 
 # FIXME: Add a short description of the node and complete fields description
@@ -11,24 +12,26 @@
 |-------|-------------|
 | firstseen| Timestamp of when a sync job first created this node  |
 | lastupdated |  Timestamp of the last time the node was updated |
-{%- for field in entity.fields %}
+{% for field in entity.fields %}
 | {{ field }} |       |
-{%- endfor %}
+{% endfor %}
 
 {% if entity.has_relationships %}
 #### Relationships
-{%- endif %}
-{%- if entity.parent_entity %}
+{% endif %}
+{% if entity.parent_entity %}
 - `{{ entity.node_name }}` belongs to a `{{ entity.parent_entity.node_name}}`
     ```
     (:{{ entity.node_name }})-[:RESOURCE]->(:{{ entity.parent_entity.node_name }})
     ```
-{%- endif %}
-{%- if entity.children_entities|length > 0 %}
+{% endif %}
+{% if entity.children_entities|length > 0 %}
 - Some node types belong to an `{{ entity.node_name }}`.
     ```
     (:{{ entity.node_name }})<-[:RESOURCE]-(
-        {%- for child in entity.children_entities %}:{{child.node_name}},{% endfor %}
+        {% for child in entity.children_entities %}
+        :{{child.node_name}},
+        {% endfor %}
     )
-{%- endif %}
+{% endif %}
 {% endfor %}

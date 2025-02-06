@@ -4,6 +4,7 @@ from collections import OrderedDict
 from jinja2 import Environment
 from jinja2 import PackageLoader
 
+from cartography_openapi.checklist import Checklist
 from cartography_openapi.entity import Entity
 
 
@@ -33,6 +34,8 @@ class Module:
         self.components_to_entities: dict[str, str] = {}
         self._jinja_env = Environment(
             loader=PackageLoader('cartography_openapi', 'templates'),
+            trim_blocks=True,
+            lstrip_blocks=True,
         )
 
     def add_entity(self, entity: Entity) -> None:
@@ -126,11 +129,20 @@ class Module:
         docs_dir = os.path.join(module_dir, 'docs')
         os.makedirs(docs_dir, exist_ok=True)
         with open(os.path.join(docs_dir, 'index.rst'), 'w', encoding='utf-8') as f:
-            f.write(self.export_docs_index())
+            f.write(self.export_template("docs_index.jinja"))
         with open(os.path.join(docs_dir, 'config.md'), 'w', encoding='utf-8') as f:
-            f.write(self.export_docs_config())
+            f.write(self.export_template("docs_config.jinja"))
         with open(os.path.join(docs_dir, 'schema.md'), 'w', encoding='utf-8') as f:
-            f.write(self.export_docs_schema())
+            f.write(self.export_template("docs_schema.jinja"))
+
+        # Create PR
+        with open(os.path.join(module_dir, 'PR.md'), 'w', encoding='utf-8') as f:
+            f.write(
+                self.export_template(
+                    "pr.jinja",
+                    checklist=Checklist().checklist,
+                ),
+            )
 
     def export_intel(self) -> str:
         """ Generate the intel/__init__.py python file for the module.
@@ -147,6 +159,7 @@ class Module:
         content = template.render(
             module=self,
         )
+        content += '\n\n'
         for entity in self.entities.values():
             # Skip entities that are not the root of the tree
             if entity.parent_entity is not None:
@@ -154,39 +167,23 @@ class Module:
             content += entity.export_sync_call(recursive=True) + '\n'
         return content
 
-    def export_docs_index(self) -> str:
-        """ Generate the docs/index.rst file for the module.
+    def export_template(self, template_name: str, **kwargs) -> str:
+        """ Render a Jinja template.
+
+        This method renders a Jinja template with the given arguments.
+        The `module` argument is automatically added to the arguments.
+
+        Args:
+            template_name (str): The name of the template to render.
+            **kwargs: The arguments to pass to the template.
 
         Returns:
-            str: The content of the docs/index.rst file.
+            str: The content of the rendered template.
         """
-        template = self._jinja_env.get_template("docs_index.jinja")
+        template = self._jinja_env.get_template(template_name)
         content = template.render(
             module=self,
-        )
-        return content
-
-    def export_docs_config(self) -> str:
-        """ Generate the docs/config.md file for the module.
-
-        Returns:
-            str: The content of the docs/config.md file.
-        """
-        template = self._jinja_env.get_template("docs_config.jinja")
-        content = template.render(
-            module=self,
-        )
-        return content
-
-    def export_docs_schema(self) -> str:
-        """ Generate the docs/schema.md file for the module.
-
-        Returns:
-            str: The content of the docs/schema.md file.
-        """
-        template = self._jinja_env.get_template("docs_schema.jinja")
-        content = template.render(
-            module=self,
+            **kwargs,
         )
         return content
 
