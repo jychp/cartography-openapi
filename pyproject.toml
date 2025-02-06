@@ -1,6 +1,6 @@
 [project]
 name = "cartography-openapi"
-version = "0.1.0"
+version = "0.2.0"
 description = "A intel plugin builder for cartogaphy for API supporting OpenAPI."
 authors = [
     { name = "Jeremy Chapeau", email = "jeremy.chapeau@gmail.com" },
