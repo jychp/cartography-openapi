@@ -95,6 +95,16 @@ class Module:
             with open(os.path.join(intel_dir, f"{entity.name.lower()}.py"), 'w', encoding='utf-8') as f:
                 f.write(entity.export_intel())
 
+        # Create tests data
+        tests_data_dir = os.path.join(module_dir, 'tests_data')
+        os.makedirs(tests_data_dir, exist_ok=True)
+        with open(os.path.join(tests_data_dir, '__init__.py'), 'w', encoding='utf-8') as f:
+            f.write('')
+        # Create entity files
+        for entity in self.entities.values():
+            with open(os.path.join(tests_data_dir, f"{entity.name.lower()}s.py"), 'w', encoding='utf-8') as f:
+                f.write(entity.export_tests_data())
+
     def export_intel(self) -> str:
         """ Generate the intel/__init__.py python file for the module.
 

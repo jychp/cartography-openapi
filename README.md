@@ -117,6 +117,7 @@ You can specify a different name for these components (e.g., RealmRepresentation
 **cartography-openapi** will generate a `<OUTPUT>/<NAME>_module` folder containing the necessary files to add the module to Cartography. This folder includes:
 - The `model` folder, which must be moved to `cartography/model/<NAME>`
 - The `intel` folder, which must be moved to `cartography/intel/<NAME>`
+- The `tests_data` folder, which must be moved to `tests/data/<NAME>`
 
 ⚠️ **WARNING**: cartography-openapi only generates a skeleton. You must modify, adapt, and test it yourself.
 
@@ -134,6 +135,7 @@ The following operations must be performed manually:
 - Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
 - List components are not supported
 - Tests are not generated
+- Tests data are not provided
 - Documentation is not generated
 
 ## License
@@ -155,6 +157,7 @@ Here are the topics we are working on for upcoming releases:
 - [ ] handle query with variable param in path
 - [ ] handle "other_links"
 - [ ] generate Cartography tests
+- [ ] generate Cartography data for tests
 - [ ] generate Cartography doc
 - [ ] generate Carography config
 - [ ] Generate PR text with checklist
