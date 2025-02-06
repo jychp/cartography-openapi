@@ -169,7 +169,6 @@ class KeycloakRealmNodeProperties(CartographyNodeProperties):
 
 
 
-
 # TODO: Add other links
 
 

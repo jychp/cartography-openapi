@@ -26,7 +26,6 @@ class KeycloakGroupNodeProperties(CartographyNodeProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
-
 @dataclass(frozen=True)
 class KeycloakGroupToRealmRelProperties(CartographyRelProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)

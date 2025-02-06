@@ -23,9 +23,8 @@ _TIMEOUT = (60, 60)
 def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
-    realm_id,
-    update_tag: int,
     common_job_parameters: Dict[str, Any],
+    realm_id,
 ) -> List[Dict]:
     users = get(
         api_session,
@@ -38,8 +37,9 @@ def sync(
         neo4j_session,
         users,  # FIXME: replace with `formated_users` if your added a transform step
         realm_id,
-        update_tag)
+        common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+
 
 @timeit
 def get(
@@ -49,7 +49,7 @@ def get(
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     params = {'first': 0, 'max': 25}
-    keep_running: bool = True
+    keep_running = True
     while keep_running:
         keep_running = False  # To avoid any infinite loop
         req = api_session.get(
@@ -67,6 +67,7 @@ def get(
             keep_running = True
         params['first'] += len(sub_results)
     return results
+
 
 def load_users(
     neo4j_session: neo4j.Session,

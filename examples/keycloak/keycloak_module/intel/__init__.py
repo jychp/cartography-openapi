@@ -27,9 +27,9 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
         )
         return
 
-
     # Create requests sessions
     api_session = requests.session()
+
     # FIXME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.keycloak_apikey}
@@ -38,34 +38,32 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://localhost",
-    }    
+    }
+
     for realm in cartography.intel.keycloak.realms.sync(
         neo4j_session,
         api_session,
-        config.update_tag,
         common_job_parameters,
-    ):        
+    ):
         cartography.intel.keycloak.clients.sync(
             neo4j_session,
             api_session,
-            realm_id=realm['id'],
-            config.update_tag,
             common_job_parameters,
+            realm_id=realm['id'],
         )
-        
+    
         cartography.intel.keycloak.groups.sync(
             neo4j_session,
             api_session,
-            realm_id=realm['id'],
-            config.update_tag,
             common_job_parameters,
+            realm_id=realm['id'],
         )
-        
+    
         cartography.intel.keycloak.users.sync(
             neo4j_session,
             api_session,
-            realm_id=realm['id'],
-            config.update_tag,
             common_job_parameters,
+            realm_id=realm['id'],
         )
+    
 

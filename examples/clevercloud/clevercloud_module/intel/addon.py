@@ -23,9 +23,8 @@ _TIMEOUT = (60, 60)
 def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
-    organization_id,
-    update_tag: int,
     common_job_parameters: Dict[str, Any],
+    organization_id,
 ) -> List[Dict]:
     addons = get(
         api_session,
@@ -38,8 +37,9 @@ def sync(
         neo4j_session,
         addons,  # FIXME: replace with `formated_addons` if your added a transform step
         organization_id,
-        update_tag)
+        common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+
 
 @timeit
 def get(
@@ -59,6 +59,7 @@ def get(
     req.raise_for_status()
     results = req.json()
     return results
+
 
 def load_addons(
     neo4j_session: neo4j.Session,
