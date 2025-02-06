@@ -105,6 +105,23 @@ class Module:
             with open(os.path.join(tests_data_dir, f"{entity.name.lower()}s.py"), 'w', encoding='utf-8') as f:
                 f.write(entity.export_tests_data())
 
+        # Create integration tests
+        integration_tests_dir = os.path.join(module_dir, 'integration_tests')
+        os.makedirs(integration_tests_dir, exist_ok=True)
+        with open(os.path.join(integration_tests_dir, '__init__.py'), 'w', encoding='utf-8') as f:
+            f.write('')
+        # Create entity files
+        for entity in self.entities.values():
+            with open(
+                os.path.join(
+                    integration_tests_dir,
+                    f"test_{entity.name.lower()}s.py",
+                ),
+                'w',
+                    encoding='utf-8',
+            ) as f:
+                f.write(entity.export_tests_integration())
+
     def export_intel(self) -> str:
         """ Generate the intel/__init__.py python file for the module.
 
@@ -124,7 +141,7 @@ class Module:
             # Skip entities that are not the root of the tree
             if entity.parent_entity is not None:
                 continue
-            content += entity.export_sync_call() + '\n'
+            content += entity.export_sync_call(recursive=True) + '\n'
         return content
 
     def __repr__(self) -> str:

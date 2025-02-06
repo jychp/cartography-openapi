@@ -99,14 +99,14 @@ class Entity:
         The parameters are returned as a dictionary with the parameter name as key and a dictionary as value.
         The dictionary contains different format of the parameter name:
             - name (key): the name of the parameter in the path
-            - arg_name: the name of the parameter as it will be used is Cartography functions
+            - var_name: the name of the parameter as it will be used is Cartography functions
             - dict_name: the variable used to retrieve the parameter from the parent entity
 
         Exemple: for a path '/groups/{group_id}/users/{user_id}' with enumeration path '/groups/{group_id}/users'
         The method will return:
         {
             'group_id': {
-                'arg_name': 'group_id',
+                'var_name': 'group_id',
                 'dict_name': 'group['id']',
             },
         }
@@ -123,7 +123,7 @@ class Entity:
                 if p_name == parent.path_id:
                     found_in_parent = True
                     result[p_name] = {
-                        'arg_name': f"{parent.name.lower()}_id",
+                        'var_name': f"{parent.name.lower()}_id",
                         'dict_name': f"{parent.name.lower()}['id']",
                     }
                     break
@@ -192,28 +192,59 @@ class Entity:
             entity=self,
         )
 
-    def export_sync_call(self) -> str:
+    def export_sync_call(self, recursive: bool = False, param_style: str = 'dict') -> str:
         """ Generate the sync call for the entity.
 
         This method generates the sync call for the entity.
         This call is used in the intel/__init__.py file to fetch the entity from the API.
         This method also calls the sync call of the children entities.
 
+        Args:
+            recursive (bool): enable recursive call (default: False)
+            param_style (str): the style of the function params (dict, var)
+
         Returns:
             str: the sync call for the entity.
         """
+        if param_style not in ('dict', 'var'):
+            raise ValueError(f"param_style must be one of ['dict', 'var'] not '{param_style}'")
         template = self._jinja_env.get_template("intel_sync_call.jinja")
         current_call = template.render(
             entity=self,
+            recursive=recursive,
+            param_style=param_style,
         )
-        for child in self.children_entities:
-            for line in child.export_sync_call().split('\n'):
-                current_call += f'    {line}\n'
+        if recursive:
+            for child in self.children_entities:
+                for line in child.export_sync_call(recursive).split('\n'):
+                    current_call += f'    {line}\n'
         return current_call
 
     def export_tests_data(self) -> str:
-        #  DOC
+        """ Generate the tests data for the entity.
+
+        This method generates the tests data for the entity.
+        The file contains the data to use in the tests.
+        WARNING: At the time it's only build the skeleton, the data must be filled manually.
+
+        Returns:
+            str: the content of the tests data file.
+        """
         template = self._jinja_env.get_template("tests_data.jinja")
+        return template.render(
+            entity=self,
+        )
+
+    def export_tests_integration(self) -> str:
+        """ Generate the tests integration for the entity.
+
+        This method generates the tests integration for the entity.
+        The file contains the tests to check the integration of the entity in the graph.
+
+        Returns:
+            str: the content of the tests integration file.
+        """
+        template = self._jinja_env.get_template("tests_integration.jinja")
         return template.render(
             entity=self,
         )
