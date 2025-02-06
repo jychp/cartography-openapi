@@ -74,6 +74,21 @@ class Entity:
         return f"{self.node_name}Schema"
 
     @property
+    def has_relationships(self) -> bool:
+        """ Check if the entity has relationships.
+
+        This property returns True if the entity has relationships with other entities.
+
+        Returns:
+            bool: True if the entity has relationships, False otherwise.
+        """
+        if self.parent_entity is not None:
+            return True
+        if len(self.children_entities) > 0:
+            return True
+        return False
+
+    @property
     def all_parents(self) -> list['Entity']:
         """ All parents of the entity.
 

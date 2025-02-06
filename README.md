@@ -119,6 +119,7 @@ You can specify a different name for these components (e.g., RealmRepresentation
 - The `intel` folder, which must be moved to `cartography/intel/<NAME>`
 - The `tests_data` folder, which must be moved to `tests/data/<NAME>`
 - The `tests_integration` folder, wich must be moved to `tests/integration/cartography/intel/<NAME>`
+- The `docs` folder, wich must be moved to `docs/root/modules/<NAME>`
 
 ⚠️ **WARNING**: cartography-openapi only generates a skeleton. You must modify, adapt, and test it yourself.
 
@@ -131,12 +132,10 @@ The following operations must be performed manually:
 
 **cartography-openapi** is a Proof of Concept, and many features are still missing (we are actively working on them):
 - The generated code does not handle authentication for API calls
-- The generated code does not support query parameters, body parameters, or headers
 - The generated code does not manage links to other entities (except for `sub-resource` links)
 - Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
 - List components are not supported
 - Tests data are not provided
-- Documentation is not generated
 
 ## License
 
@@ -151,12 +150,10 @@ None so far :(
 Here are the topics we are working on for upcoming releases:
 
 - [ ] handle API response with dict like `{'users': [], 'count': 12}`
-- [ ] handle API response where list are handled as componenet (ex: UserView, UserListVie)
+- [ ] handle API response where list are handled as componenet (ex: UserView, UserListView)
 - [ ] handle authentication
-- [ ] handle query with mandatory query_param & body_param
 - [ ] handle query with variable param in path
 - [ ] handle "other_links"
 - [ ] generate Cartography data for tests
-- [ ] generate Cartography doc
-- [ ] generate Carography config
+- [ ] generate Cartography config
 - [ ] Generate PR text with checklist

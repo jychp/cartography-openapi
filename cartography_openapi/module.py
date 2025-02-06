@@ -122,6 +122,16 @@ class Module:
             ) as f:
                 f.write(entity.export_tests_integration())
 
+        # Create docs
+        docs_dir = os.path.join(module_dir, 'docs')
+        os.makedirs(docs_dir, exist_ok=True)
+        with open(os.path.join(docs_dir, 'index.rst'), 'w', encoding='utf-8') as f:
+            f.write(self.export_docs_index())
+        with open(os.path.join(docs_dir, 'config.md'), 'w', encoding='utf-8') as f:
+            f.write(self.export_docs_config())
+        with open(os.path.join(docs_dir, 'schema.md'), 'w', encoding='utf-8') as f:
+            f.write(self.export_docs_schema())
+
     def export_intel(self) -> str:
         """ Generate the intel/__init__.py python file for the module.
 
@@ -142,6 +152,42 @@ class Module:
             if entity.parent_entity is not None:
                 continue
             content += entity.export_sync_call(recursive=True) + '\n'
+        return content
+
+    def export_docs_index(self) -> str:
+        """ Generate the docs/index.rst file for the module.
+
+        Returns:
+            str: The content of the docs/index.rst file.
+        """
+        template = self._jinja_env.get_template("docs_index.jinja")
+        content = template.render(
+            module=self,
+        )
+        return content
+
+    def export_docs_config(self) -> str:
+        """ Generate the docs/config.md file for the module.
+
+        Returns:
+            str: The content of the docs/config.md file.
+        """
+        template = self._jinja_env.get_template("docs_config.jinja")
+        content = template.render(
+            module=self,
+        )
+        return content
+
+    def export_docs_schema(self) -> str:
+        """ Generate the docs/schema.md file for the module.
+
+        Returns:
+            str: The content of the docs/schema.md file.
+        """
+        template = self._jinja_env.get_template("docs_schema.jinja")
+        content = template.render(
+            module=self,
+        )
         return content
 
     def __repr__(self) -> str:
