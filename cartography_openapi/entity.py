@@ -211,5 +211,12 @@ class Entity:
                 current_call += f'    {line}\n'
         return current_call
 
+    def export_tests_data(self) -> str:
+        #  DOC
+        template = self._jinja_env.get_template("tests_data.jinja")
+        return template.render(
+            entity=self,
+        )
+
     def __repr__(self) -> str:
         return f'<Entity {self.name}>'
