@@ -27,9 +27,9 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
         )
         return
 
-
     # Create requests sessions
     api_session = requests.session()
+
     # FIXME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.{{ module.name|lower}}_apikey}

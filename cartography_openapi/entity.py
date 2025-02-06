@@ -42,6 +42,8 @@ class Entity:
         self.component_name: str = component_name
         self._jinja_env = Environment(
             loader=PackageLoader('cartography_openapi', 'templates'),
+            trim_blocks=True,
+            lstrip_blocks=True,
         )
         self.fields: OrderedDict[str, str] = OrderedDict()
         self.parent_entity: 'Entity' | None = None
@@ -230,6 +232,7 @@ class Entity:
             param_style=param_style,
         )
         if recursive:
+            current_call += '\n'
             for child in self.children_entities:
                 for line in child.export_sync_call(recursive).split('\n'):
                     current_call += f'    {line}\n'

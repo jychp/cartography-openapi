@@ -2,15 +2,15 @@ from unittest.mock import patch
 
 import requests
 
-import cartography.intel.{{ entity._module.name|lower }}.{{ entity.name.lower }}s
-import tests.data.{{ entity._module.name|lower }}.{{ entity.name.lower }}s
+import cartography.intel.{{ entity._module.name|lower }}.{{ entity.name|lower }}s
+import tests.data.{{ entity._module.name|lower }}.{{ entity.name|lower }}s
 from tests.integration.util import check_nodes
 from tests.integration.util import check_rels
 
 TEST_UPDATE_TAG = 123456789
 
 
-@patch.object(cartography.{{ entity._module.name|lower }}.{{ entity.name.lower }}s, 'get', return_value=tests.data.{{ entity._module.name|lower }}.{{ entity.name.lower }}s.{{ entity._module.name|upper }}_{{ entity._module.name|upper }}S)
+@patch.object(cartography.{{ entity._module.name|lower }}.{{ entity.name|lower }}s, 'get', return_value=tests.data.{{ entity._module.name|lower }}.{{ entity.name|lower }}s.{{ entity._module.name|upper }}_{{ entity._module.name|upper }}S)
 def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api, neo4j_session):
     """
     Ensure that {{ entity.name|lower }}s actually get loaded
@@ -22,12 +22,12 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.{{ entity._module.name | lower }}.com",
     }
-    {%- for param in entity.needed_params.values() %}
+    {% for param in entity.needed_params.values() %}
     {{ param.var_name }} = 'CHANGEME'  # FIXME: Add here expected parent id node
-    {%- endfor %}
+    {% endfor %}
 
     # Act
-    {{- entity.export_sync_call(param_style='var') }}
+{{ entity.export_sync_call(param_style='var') }}
 
     # Assert {{ entity.name }}s exist
     expected_nodes = {
@@ -52,4 +52,4 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
         'RESOURCE',
         rel_direction_right=True,
     ) == expected_rels
-    {%- endif %}
+    {% endif %}
