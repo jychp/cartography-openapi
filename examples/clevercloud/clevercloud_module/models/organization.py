@@ -36,7 +36,6 @@ class CleverCloudOrganizationNodeProperties(CartographyNodeProperties):
 
 
 
-
 # TODO: Add other links
 
 

@@ -27,9 +27,9 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
         )
         return
 
-
     # Create requests sessions
     api_session = requests.session()
+
     # FIXME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.clevercloud_apikey}
@@ -38,26 +38,25 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://api.clever-cloud.com/v2",
-    }    
+    }
+
     for organization in cartography.intel.clevercloud.organizations.sync(
         neo4j_session,
         api_session,
-        config.update_tag,
         common_job_parameters,
-    ):        
+    ):
         cartography.intel.clevercloud.applications.sync(
             neo4j_session,
             api_session,
-            organization_id=organization['id'],
-            config.update_tag,
             common_job_parameters,
+            organization_id=organization['id'],
         )
-        
+    
         cartography.intel.clevercloud.addons.sync(
             neo4j_session,
             api_session,
-            organization_id=organization['id'],
-            config.update_tag,
             common_job_parameters,
+            organization_id=organization['id'],
         )
+    
 

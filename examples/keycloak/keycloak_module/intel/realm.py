@@ -23,7 +23,6 @@ _TIMEOUT = (60, 60)
 def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
-    update_tag: int,
     common_job_parameters: Dict[str, Any],
 ) -> List[Dict]:
     realms = get(
@@ -35,8 +34,9 @@ def sync(
     load_realms(
         neo4j_session,
         realms,  # FIXME: replace with `formated_realms` if your added a transform step
-        update_tag)
+        common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+
 
 @timeit
 def get(
@@ -54,6 +54,7 @@ def get(
     req.raise_for_status()
     results = req.json()
     return results
+
 
 def load_realms(
     neo4j_session: neo4j.Session,

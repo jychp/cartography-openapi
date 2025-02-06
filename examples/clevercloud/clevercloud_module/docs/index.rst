@@ -1,0 +1,7 @@
+CleverCloud
+########
+
+.. toctree::
+
+    config
+    schema

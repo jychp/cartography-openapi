@@ -60,7 +60,6 @@ class KeycloakClientNodeProperties(CartographyNodeProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
-
 @dataclass(frozen=True)
 class KeycloakClientToRealmRelProperties(CartographyRelProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)

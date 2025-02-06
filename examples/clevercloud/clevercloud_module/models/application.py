@@ -43,7 +43,6 @@ class CleverCloudApplicationNodeProperties(CartographyNodeProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
-
 @dataclass(frozen=True)
 class CleverCloudApplicationToOrganizationRelProperties(CartographyRelProperties):
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
