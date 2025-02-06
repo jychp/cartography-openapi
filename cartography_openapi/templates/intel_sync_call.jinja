@@ -1,13 +1,12 @@
-    {% if entity.children_entities|length > 0 %}
+    {% if entity.children_entities|length > 0 and recursive %}
     for {{ entity.name|lower}} in cartography.intel.{{ entity._module.name|lower}}.{{ entity.name|lower}}s.sync(
     {%- else %}
     cartography.intel.{{ entity._module.name|lower}}.{{ entity.name|lower}}s.sync(
     {%- endif %}
         neo4j_session,
         api_session,
-        {%- for arg in entity.needed_params.values() %}
-        {{ arg.arg_name }}={{ arg.dict_name }},
-        {%- endfor %}
-        config.update_tag,
         common_job_parameters,
-    ){% if entity.children_entities|length > 0 %}:{% endif %}
+        {%- for arg in entity.needed_params.values() %}
+        {% if param_style == 'dict' %}{{ arg.var_name }}={{ arg.dict_name }}{% else %}{{ arg.var_name }}{% endif %},
+        {%- endfor %}
+    ){% if entity.children_entities|length > 0 and recursive %}:{% endif %}

@@ -123,7 +123,6 @@ class Pagination:
         if not self._configured:
             return instruction
         if self._offset:
-            # WIP:
             instruction = f"params['{self._offset}'] += len(sub_results)"
         elif self._page:
             instruction = f"params['{self._page}'] += 1"
