@@ -2,6 +2,7 @@
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/jychp/cartography-openapi/badge)](https://scorecard.dev/viewer/?uri=github.com/jychp/cartography-openapi)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9995/badge)](https://www.bestpractices.dev/projects/9995)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jychp_cartography-openapi&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jychp_cartography-openapi)
 ![build](https://github.com/jychp/cartography-openapi/actions/workflows/ci.yml/badge.svg)
 
 **cartography-openapi** is a tool for generating modules for [Cartography](https://github.com/cartography-cncf/cartography) from specification files in OpenAPI format.
