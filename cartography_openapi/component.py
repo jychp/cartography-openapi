@@ -8,7 +8,7 @@ from cartography_openapi.path import Path
 
 
 class Component:
-    """ Represents a component of the OpenAPI schema.
+    """Represents a component of the OpenAPI schema.
 
     The component is a part of the OpenAPI schema that defines a reusable schema object.
     This class is used to store the properties of the component and the relations between components.
@@ -35,11 +35,11 @@ class Component:
         self.relations: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.direct_path: Path | None = None
         self.enumeration_path: Path | None = None
-        self.parent_component: 'Component' | None = None
+        self.parent_component: "Component" | None = None
 
     @property
     def path_id(self) -> str:
-        """ Returns the parameter to use in the path to identify the component.
+        """Returns the parameter to use in the path to identify the component.
 
         This method returns the parameter to use in the path to identify the component.
         The parameter is the first parameter that is in the direct path but not in the enumeration path.
@@ -55,14 +55,14 @@ class Component:
             str: The parameter to use in the path to identify the component.
         """
         if self.direct_path is None or self.enumeration_path is None:
-            raise ValueError('Paths not set')
+            raise ValueError("Paths not set")
         for p in self.direct_path.path_params:
             if p not in self.enumeration_path.path_params:
                 return p
-        return '<UNK>'
+        return "<UNK>"
 
     def from_schema(self, schema: dict[str, Any]) -> bool:
-        """ Parse the schema of the component.
+        """Parse the schema of the component.
 
         This method parses the schema of the component.
         The method will return False if the schema is not an object.
@@ -73,38 +73,42 @@ class Component:
         Returns:
             bool: True if the schema has been parsed, False otherwise.
         """
-        if schema.get('type', 'object') != 'object':
-            logger.debug(f'Parsing of non-object components not yet implemented ({self.name})')
+        if schema.get("type", "object") != "object":
+            logger.debug(
+                f"Parsing of non-object components not yet implemented ({self.name})"
+            )
             return False
 
-        for prop_name, prop_details in schema.get('properties', {}).items():
+        for prop_name, prop_details in schema.get("properties", {}).items():
             parsed_property: dict[str, Any] = {
-                'name': prop_name,
-                'is_array': False,
-                'type': 'string',
-                'clean_name': self._name_to_field(prop_name),
+                "name": prop_name,
+                "is_array": False,
+                "type": "string",
+                "clean_name": self._name_to_field(prop_name),
             }
-            if prop_details.get('$ref') is not None:
-                linked_component = prop_details['$ref'].split('/')[-1]
+            if prop_details.get("$ref") is not None:
+                linked_component = prop_details["$ref"].split("/")[-1]
                 self.relations[prop_name] = {
-                    'name': prop_name,
-                    'linked_component': linked_component,
-                    'clean_name': self._name_to_field(prop_name),
+                    "name": prop_name,
+                    "linked_component": linked_component,
+                    "clean_name": self._name_to_field(prop_name),
                 }
             else:
-                parsed_property['type'] = prop_details.get('type', 'string')
+                parsed_property["type"] = prop_details.get("type", "string")
                 self.properties[prop_name] = parsed_property
         return True
 
     def _name_to_field(self, name: str) -> str:
         # Replace consecutive uppercase by a single uppercase
-        local_name = re.sub(r'([A-Z]+)', lambda m: m.group(1).capitalize(), name)
+        local_name = re.sub(r"([A-Z]+)", lambda m: m.group(1).capitalize(), name)
         # Replace camelCase by snake_case
-        local_name = local_name[0].lower() + ''.join(['_' + c.lower() if c.isupper() else c for c in local_name[1:]])
+        local_name = local_name[0].lower() + "".join(
+            ["_" + c.lower() if c.isupper() else c for c in local_name[1:]]
+        )
         return local_name
 
-    def set_enumeration_path(self, path: Path, components: list['Component']) -> bool:
-        """ Set the enumeration path of the component.
+    def set_enumeration_path(self, path: Path, components: list["Component"]) -> bool:
+        """Set the enumeration path of the component.
 
         The enumeration path is the path that is used to list all the components of the same type.
         The method will set the enumeration path if the new path is better than the previous one.
@@ -123,7 +127,9 @@ class Component:
         # Option 1: No previous path
         if self.enumeration_path is None:
             self.enumeration_path = path
-            logger.debug(f"Enumeration path set to '{path.path}' for {self.name} [no previous path]")
+            logger.debug(
+                f"Enumeration path set to '{path.path}' for {self.name} [no previous path]"
+            )
             return True
         # Option 2: Linkable vs non-linkable
         is_self_linkable = False
@@ -137,24 +143,30 @@ class Component:
                 is_other_linkable = True
         if is_other_linkable and not is_self_linkable:
             self.enumeration_path = path
-            logger.debug(f"Enumeration path set to '{path.path}' for {self.name} [linkable]")
+            logger.debug(
+                f"Enumeration path set to '{path.path}' for {self.name} [linkable]"
+            )
             return True
         if is_self_linkable and not is_other_linkable:
             return False
         # Option 3: The new path is better than the previous one because it has less parameters
         if len(self.enumeration_path.path_params) > len(path.path_params):
             self.enumeration_path = path
-            logger.debug(f"Enumeration path set to '{path.path}' for {self.name} [less parameters]")
+            logger.debug(
+                f"Enumeration path set to '{path.path}' for {self.name} [less parameters]"
+            )
             return True
         # Option 4: The new path is better because it is shorted (allow to prefer x/groups over x/groups-default)
         if len(self.enumeration_path.path) > len(path.path):
             self.enumeration_path = path
-            logger.debug(f"Enumeration path set to '{path.path}' for {self.name} [shorter path]")
+            logger.debug(
+                f"Enumeration path set to '{path.path}' for {self.name} [shorter path]"
+            )
             return True
         return False
 
-    def set_direct_path(self, path: Path, components: list['Component']) -> bool:
-        """ Set the direct path of the component.
+    def set_direct_path(self, path: Path, components: list["Component"]) -> bool:
+        """Set the direct path of the component.
 
         The direct path is the path that is used to get a single component.
         The method will set the direct path if the new path is better than the previous one.
@@ -173,7 +185,9 @@ class Component:
         # Option 1: No previous path
         if self.direct_path is None:
             self.direct_path = path
-            logger.debug(f"Direct path set to '{path.path}' for {self.name} [no previous path]")
+            logger.debug(
+                f"Direct path set to '{path.path}' for {self.name} [no previous path]"
+            )
             return True
         # Option 2: Linkable vs non-linkable
         is_self_linkable = False
@@ -194,14 +208,18 @@ class Component:
         # Option 3: The new path is better than the previous one because it has less parameters
         if len(self.direct_path.path_params) > len(path.path_params):
             self.direct_path = path
-            logger.debug(f"Direct path set to '{path.path}' for {self.name} [less parameters]")
+            logger.debug(
+                f"Direct path set to '{path.path}' for {self.name} [less parameters]"
+            )
             return True
         # Option 4: The new path is better because it is shorted (allow to prefer x/groups over x/groups-default)
         if len(self.direct_path.path) > len(path.path):
             self.direct_path = path
-            logger.debug(f"Direct path set to '{path.path}' for {self.name} [shorter path]")
+            logger.debug(
+                f"Direct path set to '{path.path}' for {self.name} [shorter path]"
+            )
             return True
         return False
 
     def __repr__(self) -> str:
-        return f'<Component {self.name}>'
+        return f"<Component {self.name}>"

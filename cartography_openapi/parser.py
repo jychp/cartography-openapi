@@ -12,7 +12,7 @@ from cartography_openapi.path import Path
 
 
 class OpenAPIParser:
-    """ Parser for OpenAPI specs.
+    """Parser for OpenAPI specs.
 
     The OpenAPIParser class is used to parse an OpenAPI spec and generate models from it.
     The parser can load the spec from a file or download it from a URL.
@@ -38,10 +38,11 @@ class OpenAPIParser:
     """
 
     def __init__(
-            self, name: str,
-            url: str | None = None,
-            file: str | None = None,
-            ignored_path: list[str] | None = None,
+        self,
+        name: str,
+        url: str | None = None,
+        file: str | None = None,
+        ignored_path: list[str] | None = None,
     ) -> None:
         self.name = name
         self.checklist: list[str] = []
@@ -53,7 +54,7 @@ class OpenAPIParser:
         self._ready = False
         if ignored_path is not None:
             for path in ignored_path:
-                if path.endswith('*'):
+                if path.endswith("*"):
                     self._ignore_partial_paths.append(path[:-1])
                 else:
                     self._ignore_paths.append(path)
@@ -62,7 +63,9 @@ class OpenAPIParser:
         elif url:
             self._download(url)
         else:
-            raise ValueError('You must provide a file or a URL to load the OpenAPI spec')
+            raise ValueError(
+                "You must provide a file or a URL to load the OpenAPI spec"
+            )
 
     def _download(self, url: str) -> None:
         try:
@@ -70,13 +73,13 @@ class OpenAPIParser:
             req.raise_for_status()
             raw_data = req.json()
         except requests.RequestException as e:
-            logger.error(f'Failed to download the OpenAPI spec from {url}: {e}')
+            logger.error(f"Failed to download the OpenAPI spec from {url}: {e}")
             return
         self._parse(raw_data)
 
     def _load(self, file_path: str) -> None:
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 raw_data = json.load(f)
         except FileNotFoundError:
             logger.error(f"File '{file_path}' not found.")
@@ -85,20 +88,22 @@ class OpenAPIParser:
 
     def _parse(self, raw_data: dict[str, Any]) -> None:
         # Search for server
-        servers = raw_data.get('servers')
+        servers = raw_data.get("servers")
         if not servers:
             Checklist().add_warning(
-                'No servers found in the OpenAPI spec,'
-                'edit the `intel/*.py` files to add the server URL.',
+                "No servers found in the OpenAPI spec,"
+                "edit the `intel/*.py` files to add the server URL.",
             )
-            self.module.server_url = 'https://localhost'
+            self.module.server_url = "https://localhost"
         else:
             if len(servers) > 1:
-                Checklist().add_warning('Multiple servers found in the OpenAPI spec. Check `intel/*.py` files.')
-            self.module.server_url = servers[0].get('url')
+                Checklist().add_warning(
+                    "Multiple servers found in the OpenAPI spec. Check `intel/*.py` files."
+                )
+            self.module.server_url = servers[0].get("url")
 
         # Create components
-        components = raw_data.get('components', {}).get('schemas', {})
+        components = raw_data.get("components", {}).get("schemas", {})
         for component_name, component_schema in components.items():
             component = Component(component_name)
             if not component.from_schema(component_schema):
@@ -106,11 +111,11 @@ class OpenAPIParser:
             self.components[component_name] = component
 
         # Create paths
-        paths = raw_data.get('paths', {})
+        paths = raw_data.get("paths", {})
 
         for path, methods in paths.items():
             if path in self._ignore_paths:
-                logger.debug(f'Skipping path {path} (ignored)')
+                logger.debug(f"Skipping path {path} (ignored)")
                 continue
             ignored_pattern = False
             for pattern in self._ignore_partial_paths:
@@ -118,12 +123,12 @@ class OpenAPIParser:
                     ignored_pattern = True
                     break
             if ignored_pattern:
-                logger.debug(f'Skipping path {path} (ignored pattern)')
+                logger.debug(f"Skipping path {path} (ignored pattern)")
                 continue
-            if 'get' not in methods:
-                logger.debug(f'Skipping, no GET method found for {path}')
+            if "get" not in methods:
+                logger.debug(f"Skipping, no GET method found for {path}")
                 continue
-            get_method = methods['get']
+            get_method = methods["get"]
             path_obj = Path(path, get_method)
             if path_obj.returned_component is not None:
                 if path_obj.returned_component not in self.component_to_paths:
@@ -131,7 +136,7 @@ class OpenAPIParser:
                 self.component_to_paths[path_obj.returned_component].append(path_obj)
 
         if len(self.components) == 0:
-            logger.error('No components imported from the OpenAPI spec.')
+            logger.error("No components imported from the OpenAPI spec.")
             return
 
         self._ready = True
@@ -141,7 +146,7 @@ class OpenAPIParser:
         )
 
     def build_module(self, **kwargs) -> bool:
-        """ Build the cartography module from the ingested OpenAPI spec.
+        """Build the cartography module from the ingested OpenAPI spec.
 
         This method builds the cartography module from the ingested OpenAPI spec.
         It creates the entities from the components and the paths.
@@ -153,25 +158,25 @@ class OpenAPIParser:
             bool: True if the module has been built successfully, False otherwise.
         """
         if not self._ready:
-            logger.error('OpenAPI spec not ready, cannot build the module.')
+            logger.error("OpenAPI spec not ready, cannot build the module.")
             return False
         consolidated_components: list[Component] = []
 
         for component_name, entity_name in kwargs.items():
-            logger.info(f'Building model for {component_name} as {entity_name}')
+            logger.info(f"Building model for {component_name} as {entity_name}")
             # Get the schema
             component = self.components.get(component_name)
             if not component:
-                logger.error(f'No component found for {component_name}')
+                logger.error(f"No component found for {component_name}")
                 continue
 
             # Get the paths
             paths = self.component_to_paths.get(component_name, [])
             if not paths:
-                logger.error(f'No path found for {component_name}')
+                logger.error(f"No path found for {component_name}")
                 continue
 
-            logger.debug(f'Processing {component_name} paths ({entity_name})')
+            logger.debug(f"Processing {component_name} paths ({entity_name})")
             for path in paths:
                 if path.returns_array:
                     component.set_enumeration_path(path, consolidated_components)
@@ -185,10 +190,12 @@ class OpenAPIParser:
                         continue
                     if component.direct_path.is_sub_path_of(c.direct_path, 1):
                         component.parent_component = c
-                        logger.debug(f'Parent component for {component_name}: {component.parent_component.name}')
+                        logger.debug(
+                            f"Parent component for {component_name}: {component.parent_component.name}"
+                        )
                         break
             if component.parent_component is None:
-                logger.debug(f'No parent component found for {component_name}')
+                logger.debug(f"No parent component found for {component_name}")
 
             consolidated_components.append(component)
 
@@ -200,7 +207,7 @@ class OpenAPIParser:
         return True
 
     def export(self, output_dir: str) -> None:
-        """ Export the module to the output directory.
+        """Export the module to the output directory.
 
         see: cartography_openapi.module.Module.export
 
@@ -208,6 +215,6 @@ class OpenAPIParser:
             output_dir (str): The output directory.
         """
         if not self._ready:
-            logger.error('OpenAPI spec not ready, cannot export the module.')
+            logger.error("OpenAPI spec not ready, cannot export the module.")
             return
         self.module.export(output_dir)

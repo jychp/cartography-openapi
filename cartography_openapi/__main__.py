@@ -10,44 +10,44 @@ def main() -> None:
     # ARGS PARSING
     parser = argparse.ArgumentParser("Cartogtaphy - Import OpenAPI")
     parser.add_argument(
-        '-v',
-        '--verbose',
+        "-v",
+        "--verbose",
         help="Display DEBUG level messsages",
-        action='store_true',
+        action="store_true",
     )
     parser.add_argument(
-        '-u',
-        '--url',
+        "-u",
+        "--url",
         help="URL of the OpenAPI specifications",
     )
     parser.add_argument(
-        '-f',
-        '--file',
+        "-f",
+        "--file",
         help="Path of the OpenAPI specifications",
     )
     parser.add_argument(
-        '-o',
-        '--output',
+        "-o",
+        "--output",
         help="Output directory",
-        default='.',
+        default=".",
     )
     parser.add_argument(
-        '-n',
-        '--name',
+        "-n",
+        "--name",
         help="Name of the intel module",
         required=True,
     )
     parser.add_argument(
-        '-i',
-        '--ignore',
+        "-i",
+        "--ignore",
         help="Ignore specific paths (e.g. /path/to/ignore or /path/to/*)",
-        action='append',
+        action="append",
     )
     parser.add_argument(
-        'elements',
+        "elements",
         type=str,
-        nargs='+',
-        help='Names of elements to import (RemoteName=LocalName)',
+        nargs="+",
+        help="Names of elements to import (RemoteName=LocalName)",
     )
     args = parser.parse_args()
     if not args.verbose:
@@ -55,17 +55,17 @@ def main() -> None:
         logger.add(sys.stderr, level="INFO")
 
     if args.url is None and args.file is None:
-        logger.error('You must provide either a URL or a file')
+        logger.error("You must provide either a URL or a file")
         exit(1)
     if args.url and args.file:
-        logger.error('You must provide either a URL or a file, not both')
+        logger.error("You must provide either a URL or a file, not both")
         exit(1)
 
     openapi_parser = OpenAPIParser(args.name, args.url, args.file, args.ignore)
     components_to_models: dict[str, str] = {}
     for element in args.elements:
-        if '=' in element:
-            remote_name, local_name = element.split('=', 1)
+        if "=" in element:
+            remote_name, local_name = element.split("=", 1)
         else:
             remote_name = element
             local_name = None
@@ -74,5 +74,5 @@ def main() -> None:
         openapi_parser.export(args.output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
