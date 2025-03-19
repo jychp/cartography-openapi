@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Entity:
-    """ Represents an entity (a node) in the data model.
+    """Represents an entity (a node) in the data model.
 
     This class is used to represent an entity in the data model.
     An entity is a node in the graph that represents a resource in the API.
@@ -36,24 +36,24 @@ class Entity:
         path_id (str | None): The path ID of the entity.
     """
 
-    def __init__(self, module: 'Module', name: str, component_name: str) -> None:
+    def __init__(self, module: "Module", name: str, component_name: str) -> None:
         self._module = module
         self.name = name
         self.component_name: str = component_name
         self._jinja_env = Environment(
-            loader=PackageLoader('cartography_openapi', 'templates'),
+            loader=PackageLoader("cartography_openapi", "templates"),
             trim_blocks=True,
             lstrip_blocks=True,
         )
         self.fields: OrderedDict[str, str] = OrderedDict()
-        self.parent_entity: 'Entity' | None = None
-        self.children_entities: list['Entity'] = []
+        self.parent_entity: "Entity" | None = None
+        self.children_entities: list["Entity"] = []
         self.enumeration_path: Path | None = None
         self.path_id: str | None = None
 
     @property
     def node_name(self) -> str:
-        """ Name of the node in the graph.
+        """Name of the node in the graph.
 
         The node name is the concatenation of the module name and the entity name.
         eg: 'KeycloakRealm'
@@ -65,7 +65,7 @@ class Entity:
 
     @property
     def node_class(self) -> str:
-        """ Name of the class in the graph.
+        """Name of the class in the graph.
 
         The node class is the concatenation of the module name and the entity name followed by 'Schema'.
         eg: 'KeycloakRealmSchema'
@@ -77,7 +77,7 @@ class Entity:
 
     @property
     def has_relationships(self) -> bool:
-        """ Check if the entity has relationships.
+        """Check if the entity has relationships.
 
         This property returns True if the entity has relationships with other entities.
 
@@ -91,8 +91,8 @@ class Entity:
         return False
 
     @property
-    def all_parents(self) -> list['Entity']:
-        """ All parents of the entity.
+    def all_parents(self) -> list["Entity"]:
+        """All parents of the entity.
 
         This property returns a list of all the parents of the entity.
         The list is ordered from the closest parent to the most distant parent.
@@ -101,7 +101,7 @@ class Entity:
         Returns:
             list[Entity]: The list of all parents of the entity.
         """
-        result: list['Entity'] = []
+        result: list["Entity"] = []
         if self.parent_entity is not None:
             result = self.parent_entity.all_parents
             result.append(self.parent_entity)
@@ -109,7 +109,7 @@ class Entity:
 
     @property
     def needed_params(self) -> dict[str, dict[str, str]]:
-        """ Returns the needed parameters to fetch the entity.
+        """Returns the needed parameters to fetch the entity.
 
         This method returns the needed parameters to fetch the entity.
         The parameters are the path parameters of the enumeration path.
@@ -133,23 +133,25 @@ class Entity:
         """
         result: dict[str, dict[str, str]] = {}
         if self.enumeration_path is None:
-            raise ValueError('Enumeration path not set')
+            raise ValueError("Enumeration path not set")
         for p_name, p_data in self.enumeration_path.path_params.items():
             found_in_parent = False
             for parent in self.all_parents:
                 if p_name == parent.path_id:
                     found_in_parent = True
                     result[p_name] = {
-                        'var_name': f"{parent.name.lower()}_id",
-                        'dict_name': f"{parent.name.lower()}['id']",
+                        "var_name": f"{parent.name.lower()}_id",
+                        "dict_name": f"{parent.name.lower()}['id']",
                     }
                     break
             if not found_in_parent:
-                raise NotImplementedError('Path with variable not implemented')
+                raise NotImplementedError("Path with variable not implemented")
         return result
 
-    def build_from_component(self, component: Component, consolidated_components: list[Component]) -> None:
-        """ Build the entity from a component.
+    def build_from_component(
+        self, component: Component, consolidated_components: list[Component]
+    ) -> None:
+        """Build the entity from a component.
 
         This method builds the entity from a component.
         It extracts the fields from the properties and relations of the component.
@@ -164,26 +166,30 @@ class Entity:
 
         # Build fields from properties
         for prop_name, prop in component.properties.items():
-            self.fields[prop['clean_name']] = prop_name
+            self.fields[prop["clean_name"]] = prop_name
 
         # Build fields from relations
         for rel_name, rel in component.relations.items():
             rel_field_name = f"{rel['clean_name']}_id"
-            if rel['linked_component'] in consolidated_components:
+            if rel["linked_component"] in consolidated_components:
                 # TODO: Create a link
-                raise NotImplementedError('Not implemented')
+                raise NotImplementedError("Not implemented")
             self.fields[rel_field_name] = f"{rel_name}.id"
 
         # Build sub_resource link
         if component.parent_component is not None:
-            self.parent_entity = self._module.get_entity_by_component(component.parent_component.name)
+            self.parent_entity = self._module.get_entity_by_component(
+                component.parent_component.name
+            )
             if self.parent_entity is None:
-                logger.error(f"Parent entity not found for component '{component.parent_component.name}'")
+                logger.error(
+                    f"Parent entity not found for component '{component.parent_component.name}'"
+                )
             else:
                 self.parent_entity.children_entities.append(self)
 
     def export_model(self) -> str:
-        """ Generate the model python file for the entity.
+        """Generate the model python file for the entity.
 
         This method generates the model python file for the entity.
         The file contains the node schema of the entity and the edges to other entities.
@@ -195,7 +201,7 @@ class Entity:
         return template.render(entity=self)
 
     def export_intel(self) -> str:
-        """ Generate the intel python file for the entity.
+        """Generate the intel python file for the entity.
 
         This method generates the intel python file for the entity.
         The file contains the required methods to fetch the entity from the API and
@@ -209,8 +215,10 @@ class Entity:
             entity=self,
         )
 
-    def export_sync_call(self, recursive: bool = False, param_style: str = 'dict') -> str:
-        """ Generate the sync call for the entity.
+    def export_sync_call(
+        self, recursive: bool = False, param_style: str = "dict"
+    ) -> str:
+        """Generate the sync call for the entity.
 
         This method generates the sync call for the entity.
         This call is used in the intel/__init__.py file to fetch the entity from the API.
@@ -223,8 +231,10 @@ class Entity:
         Returns:
             str: the sync call for the entity.
         """
-        if param_style not in ('dict', 'var'):
-            raise ValueError(f"param_style must be one of ['dict', 'var'] not '{param_style}'")
+        if param_style not in ("dict", "var"):
+            raise ValueError(
+                f"param_style must be one of ['dict', 'var'] not '{param_style}'"
+            )
         template = self._jinja_env.get_template("intel_sync_call.jinja")
         current_call = template.render(
             entity=self,
@@ -232,14 +242,14 @@ class Entity:
             param_style=param_style,
         )
         if recursive:
-            current_call += '\n'
+            current_call += "\n"
             for child in self.children_entities:
-                for line in child.export_sync_call(recursive).split('\n'):
-                    current_call += f'    {line}\n'
+                for line in child.export_sync_call(recursive).split("\n"):
+                    current_call += f"    {line}\n"
         return current_call
 
     def export_tests_data(self) -> str:
-        """ Generate the tests data for the entity.
+        """Generate the tests data for the entity.
 
         This method generates the tests data for the entity.
         The file contains the data to use in the tests.
@@ -254,7 +264,7 @@ class Entity:
         )
 
     def export_tests_integration(self) -> str:
-        """ Generate the tests integration for the entity.
+        """Generate the tests integration for the entity.
 
         This method generates the tests integration for the entity.
         The file contains the tests to check the integration of the entity in the graph.
@@ -268,4 +278,4 @@ class Entity:
         )
 
     def __repr__(self) -> str:
-        return f'<Entity {self.name}>'
+        return f"<Entity {self.name}>"

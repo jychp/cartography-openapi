@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class Pagination:
-    """ Handles the pagination of a path.
+    """Handles the pagination of a path.
 
     The Pagination class is used to handle the pagination of a path.
     It looks for the pagination parameters in the path and generates the parameters to use in the request.
@@ -33,14 +33,14 @@ class Pagination:
         DEFAULT_LIMIT (int): The default limit value (25).
     """
 
-    OFFSET_PARAMS = ['offset', 'first']
-    LIMIT_PARAMS = ['limit', 'per_page', 'max', 'size']
-    PAGE_PARAMS = ['page', 'current_page']
+    OFFSET_PARAMS = ["offset", "first"]
+    LIMIT_PARAMS = ["limit", "per_page", "max", "size"]
+    PAGE_PARAMS = ["page", "current_page"]
     DEFAULT_OFFSET = 0
     DEFAULT_PAGE = 1
     DEFAULT_LIMIT = 25
 
-    def __init__(self, path: 'Path') -> None:
+    def __init__(self, path: "Path") -> None:
         self._path = path
         self._offset: str | None = None
         self._limit: str | None = None
@@ -64,26 +64,32 @@ class Pagination:
 
         if not self._offset and not self._limit:
             Checklist().add_warning(
-                f'No pagination parameters found for path {self._path.path},'
-                'pagination might be missing',
+                f"No pagination parameters found for path {self._path.path},"
+                "pagination might be missing",
             )
         elif self._offset and self._limit and self._page:
             Checklist().add_warning(
-                f'Ambigous pagination parameters found for path {self._path.path},'
-                'please check the parameters',
+                f"Ambigous pagination parameters found for path {self._path.path},"
+                "please check the parameters",
             )
         elif self._limit is None:
-            Checklist().add_warning(f'Missing limit parameter for path {self._path.path}, pagination might be missing')
+            Checklist().add_warning(
+                f"Missing limit parameter for path {self._path.path}, pagination might be missing"
+            )
         elif self._offset:
-            logger.debug(f'Found pagination ({self._offset},{self._limit}) for path {self._path.path}')
+            logger.debug(
+                f"Found pagination ({self._offset},{self._limit}) for path {self._path.path}"
+            )
             self._configured = True
         else:
-            logger.debug(f'Found pagination ({self._page},{self._limit}) for path {self._path.path}')
+            logger.debug(
+                f"Found pagination ({self._page},{self._limit}) for path {self._path.path}"
+            )
             self._configured = True
 
     @property
     def params(self) -> dict[str, int]:
-        """ Returns the parameters to use in the request.
+        """Returns the parameters to use in the request.
 
         This method returns the parameters to use in the request.
         If the pagination is not configured, an empty dictionary is returned.
@@ -108,7 +114,7 @@ class Pagination:
 
     @property
     def increment_instruction(self) -> str:
-        """ Returns the instruction to increment the pagination.
+        """Returns the instruction to increment the pagination.
 
         This method returns the python instruction to increment the pagination.
         If the pagination is not configured, the instruction is 'break' to avoid infinite loops.
@@ -119,7 +125,9 @@ class Pagination:
         Returns:
             str: The instruction to increment the pagination.
         """
-        instruction: str = 'break'  # For safety reasons we return break to avoid infinite loops
+        instruction: str = (
+            "break"  # For safety reasons we return break to avoid infinite loops
+        )
         if not self._configured:
             return instruction
         if self._offset:
@@ -130,7 +138,7 @@ class Pagination:
 
     @classmethod
     def current_params(cls) -> list[str]:
-        """ Returns the list of current parameters to look for.
+        """Returns the list of current parameters to look for.
 
         This method returns the list of current parameters to look for in the path.
 
