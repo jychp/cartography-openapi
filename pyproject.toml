@@ -19,7 +19,7 @@ packages = [{include = "cartography_openapi"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 loguru = "^0.7.3"
-jinja2 = "^3.1.5"
+jinja2 = "^3.1.6"
 requests = "^2.32.3"
 
 [tool.poetry.group.test.dependencies]
