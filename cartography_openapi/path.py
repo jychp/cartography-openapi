@@ -102,14 +102,14 @@ class Path:
 
     def _guess_returned_component(self, response_schema: dict[str, Any]) -> bool:
         # DOC
-        if 'allOf' in response_schema:
+        if "allOf" in response_schema:
             # Usually, the common stuff (like pagination) is in the first schema
             # and the specific stuff is in the last schema
-            for schema in reversed(response_schema['allOf']):
+            for schema in reversed(response_schema["allOf"]):
                 if self._guess_returned_component(schema):
                     return True
             return False
-        
+
         component_name = None
         if response_schema.get("type") == "object":
             for k, v in response_schema.get("properties", {}).items():
@@ -117,7 +117,7 @@ class Path:
                     component_name = v.get("$ref")
                     self.set_indirect_ref(k)
                     break
-        elif 'properties' in response_schema:
+        elif "properties" in response_schema:
             # If the response schema is an object but doesn't have a type, we assume it's a component
             for k, v in response_schema.get("properties", {}).items():
                 if v.get("$ref"):
