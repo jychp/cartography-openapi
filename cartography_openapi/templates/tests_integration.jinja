@@ -23,7 +23,7 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
         "BASE_URL": "https://fake.{{ entity._module.name | lower }}.com",
     }
     {% for param in entity.needed_params.values() %}
-    {{ param.var_name }} = 'XXX'  # CHANGEME: Add here expected parent id node
+    {{ param.var_name }} = 'CHANGEME'  # CHANGEME: Add here expected parent id node
     {% endfor %}
 
     # Act

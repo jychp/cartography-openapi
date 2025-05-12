@@ -21,7 +21,7 @@ class Field:
     def from_schema(self, schema: dict[str, Any]) -> bool:
         # DOC
         self.description = schema.get("description")
-        self.example = schema.get("example")
+        self.example = schema.get("example", "CHANGEME")
         schema_type = schema.get("type")
         # Handle array of objects
         if schema_type == "array" and len(schema.get("items", {})) == 0:

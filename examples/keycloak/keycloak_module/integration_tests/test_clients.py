@@ -22,7 +22,7 @@ def test_load_keycloak_clients(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.keycloak.com",
     }
-    realm_id = 'XXX'  # CHANGEME: Add here expected parent id node
+    realm_id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.keycloak.clients.sync(

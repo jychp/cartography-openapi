@@ -22,7 +22,7 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.clevercloud.com",
     }
-    organization_id = 'XXX'  # CHANGEME: Add here expected parent id node
+    organization_id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.clevercloud.addons.sync(
