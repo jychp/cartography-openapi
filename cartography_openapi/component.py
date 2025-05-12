@@ -126,13 +126,25 @@ class Component:
             return False
 
         for prop_name, prop_details in schema.get("properties", {}).items():
+            if self.name == "iam_response_collection_accounts":
+                print(prop_name, prop_details)
             if prop_details.get("$ref") is not None:
                 short_name = prop_details["$ref"].split("/")[-1]
                 self.relations[prop_name] = {
                     "name": prop_name,
                     "linked_component": short_name,
                     "clean_name": self._name_to_field(prop_name),
+                    "is_array": False
                 }
+            elif prop_details.get("type") == "array" and len(prop_details.get("items", {})) > 0:
+                if prop_details["items"].get("$ref") is not None:
+                    short_name = prop_details["items"]["$ref"].split("/")[-1]
+                    self.relations[prop_name] = {
+                        "name": prop_name,
+                        "linked_component": short_name,
+                        "clean_name": self._name_to_field(prop_name),
+                        "is_array": True,
+                    }
             elif prop_details.get("type") == "object":
                 for sub_prop_name, sub_prop_details in prop_details.get(
                     "properties", {}

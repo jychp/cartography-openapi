@@ -1,7 +1,5 @@
 ## Keycloak Configuration
 
-.. _keycloak_config:
-
 Follow these steps to analyze Keycloak objects with Cartography.
 
 # CHANGEME: Please provide how to configure (eg. generate API Key, CLI arguments etc ...)

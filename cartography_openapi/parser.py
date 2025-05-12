@@ -138,7 +138,7 @@ class OpenAPIParser:
             if path_obj.returned_component is not None:
                 if path_obj.returned_component not in self.component_to_paths:
                     self.component_to_paths[path_obj.returned_component] = []
-                self.component_to_paths[path_obj.returned_component].append(path_obj)
+                self.component_to_paths[path_obj.returned_component].append(path_obj)          
 
         if len(self.components) == 0:
             logger.error("No components imported from the OpenAPI spec.")
@@ -186,8 +186,7 @@ class OpenAPIParser:
                     for path in self.component_to_paths.get(ic.name, []):
                         path.indirect_ref = ref
                         found_indirect_path = True
-                        # BUG: Bug when indirect ref
-                        if path.returns_array:
+                        if ic.relations[ref]["is_array"]:
                             component.set_enumeration_path(
                                 path, consolidated_components
                             )
@@ -200,7 +199,6 @@ class OpenAPIParser:
 
             logger.debug(f"Processing {component_name} paths ({entity_name})")
             for path in paths:
-                # BUG: Bug when indirect ref
                 if path.returns_array:
                     component.set_enumeration_path(path, consolidated_components)
                 else:
