@@ -48,6 +48,7 @@ class OpenAPIParser:
         self.checklist: list[str] = []
         self.module = Module(name)
         self.components: dict[str, Component] = {}
+        self.reverse_components: dict[str, list[Component]] = {}
         self.component_to_paths: dict[str, list[Path]] = {}
         self._ignore_paths: list[str] = []
         self._ignore_partial_paths: list[str] = []
@@ -109,7 +110,11 @@ class OpenAPIParser:
             if not component.from_schema(component_schema):
                 continue
             self.components[component_name] = component
-
+            for prop_name, prop_details in component.relations.items():
+                target_component = prop_details["linked_component"]
+                if target_component not in self.reverse_components:
+                    self.reverse_components[target_component] = []
+                self.reverse_components[target_component].append(component)
         # Create paths
         paths = raw_data.get("paths", {})
 
@@ -173,8 +178,22 @@ class OpenAPIParser:
             # Get the paths
             paths = self.component_to_paths.get(component_name, [])
             if not paths:
-                logger.error(f"No path found for {component_name}")
-                continue
+                logger.debug(f"No paths found for {component_name}, trying to find indirect paths")
+                found_indirect_path = False
+                for ic in self.reverse_components.get(component_name, []):
+                    for path in self.component_to_paths.get(ic.name, []):
+                        found_indirect_path = True
+                        if path.returns_array:
+                            # WIP: Need to specify indirect path
+                            component.set_enumeration_path(path, consolidated_components)
+                        else:
+                            # WIP: Need to specify indirect path
+                            component.set_direct_path(path, consolidated_components)
+                        print(path, 'INDIRECT', component_name)
+
+                if not found_indirect_path:
+                    logger.error(f"No path found for {component_name}")
+                    continue
 
             logger.debug(f"Processing {component_name} paths ({entity_name})")
             for path in paths:

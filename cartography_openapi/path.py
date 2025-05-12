@@ -70,6 +70,10 @@ class Path:
         self.returned_component = component_name.split("/")[-1]
 
         for param in method.get("parameters", []):
+            # TODO: handled ref
+            if "$ref" in param:
+                logger.debug(f"Skipping, ref found in parameters: {param['$ref']}")
+                continue
             if param["in"] == "path":
                 self.path_params[param["name"]] = param
             elif param["in"] == "body":

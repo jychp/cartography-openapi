@@ -54,9 +54,11 @@ class Component:
         Returns:
             str: The parameter to use in the path to identify the component.
         """
-        if self.direct_path is None or self.enumeration_path is None:
+        if self.direct_path is None:
             raise ValueError("Paths not set")
         for p in self.direct_path.path_params:
+            if self.enumeration_path is None:
+                return p
             if p not in self.enumeration_path.path_params:
                 return p
         return "<UNK>"
@@ -73,6 +75,12 @@ class Component:
         Returns:
             bool: True if the schema has been parsed, False otherwise.
         """
+        if 'allOf' in schema:
+            logger.debug(f"Parsing allOf in {self.name} with recursion")
+            for sub_schema in schema['allOf']:
+                self.from_schema(sub_schema)
+            return True
+
         if schema.get("type", "object") != "object":
             logger.debug(
                 f"Parsing of non-object components not yet implemented ({self.name})"

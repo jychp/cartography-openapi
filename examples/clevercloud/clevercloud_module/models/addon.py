@@ -42,7 +42,7 @@ class CleverCloudAddonToOrganizationRel(CartographyRelSchema):
     properties: CleverCloudAddonToOrganizationRelProperties = CleverCloudAddonToOrganizationRelProperties()
 
 
-# TODO: Add other links
+# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

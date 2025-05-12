@@ -142,6 +142,7 @@ The following operations must be performed manually:
 - Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
 - List components are not supported
 - Tests data are not provided
+- The parser is not able to handle ref in parameter schemas
 
 ## License
 

@@ -77,7 +77,7 @@ class KeycloakClientToRealmRel(CartographyRelSchema):
     properties: KeycloakClientToRealmRelProperties = KeycloakClientToRealmRelProperties()
 
 
-# TODO: Add other links
+# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

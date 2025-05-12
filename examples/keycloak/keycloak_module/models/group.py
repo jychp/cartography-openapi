@@ -43,7 +43,7 @@ class KeycloakGroupToRealmRel(CartographyRelSchema):
     properties: KeycloakGroupToRealmRelProperties = KeycloakGroupToRealmRelProperties()
 
 
-# TODO: Add other links
+# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

@@ -107,7 +107,7 @@ class Entity:
         return result
 
     @property
-    def needed_params(self) -> dict[str, dict[str, str]]:
+    def needed_params(self) -> dict[str, dict[str, str | None]]:
         """Returns the needed parameters to fetch the entity.
 
         This method returns the needed parameters to fetch the entity.
@@ -132,7 +132,12 @@ class Entity:
         """
         result: dict[str, dict[str, str]] = {}
         if self.enumeration_path is None:
-            raise ValueError("Enumeration path not set")
+            return {
+                self.path_id: {
+                    "var_name": self.path_id,
+                    "dict_name": None
+                }
+            }
         for p_name, p_data in self.enumeration_path.path_params.items():
             found_in_parent = False
             for parent in self.all_parents:
