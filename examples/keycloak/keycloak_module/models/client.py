@@ -7,7 +7,6 @@ from cartography.models.core.relationships import CartographyRelProperties
 from cartography.models.core.relationships import CartographyRelSchema
 from cartography.models.core.relationships import LinkDirection
 from cartography.models.core.relationships import make_target_node_matcher
-from cartography.models.core.relationships import OtherRelationships
 from cartography.models.core.relationships import TargetNodeMatcher
 
 
@@ -57,18 +56,17 @@ class KeycloakClientToRealmRelProperties(CartographyRelProperties):
 
 
 @dataclass(frozen=True)
-# (:KeycloakClient)-[:RESOURCE]->(:KeycloakRealm)
+# (:KeycloakClient)<-[:RESOURCE]-(:KeycloakRealm)
 class KeycloakClientToRealmRel(CartographyRelSchema):
     target_node_label: str = 'KeycloakRealm'
     target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
         {'id': PropertyRef('realm_id', set_in_kwargs=True)},
     )
-    direction: LinkDirection = LinkDirection.OUTWARD
+    direction: LinkDirection = LinkDirection.INWARD
     rel_label: str = "RESOURCE"
     properties: KeycloakClientToRealmRelProperties = KeycloakClientToRealmRelProperties()
 
 
-# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

@@ -24,16 +24,19 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
+    id,
 ) -> List[Dict]:
     organizations = get(
         api_session,
         common_job_parameters['BASE_URL'],
+        id,
     )
     # CHANGEME: You can configure here a transform operation
     # formated_organizations = transform(organizations)
     load_organizations(
         neo4j_session,
         organizations,  # CHANGEME: replace with `formated_organizations` if your added a transform step
+        id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -42,12 +45,14 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
+    id,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
-        "{base_url}/organisations".format(
+        "{base_url}".format(
             base_url=base_url,
+            id=id,
         ),
         timeout=_TIMEOUT
     )
@@ -59,6 +64,7 @@ def get(
 def load_organizations(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
+    id,
     update_tag: int,
 ) -> None:
     load(
@@ -66,6 +72,7 @@ def load_organizations(
         CleverCloudOrganizationSchema(),
         data,
         lastupdated=update_tag,
+        id=id,
     )
 
 

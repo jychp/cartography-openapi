@@ -44,26 +44,27 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
         neo4j_session,
         api_session,
         common_job_parameters,
+        realm=None,
     ):
         cartography.intel.keycloak.clients.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm_id=realm['id'],
+            realm=None,
         )
     
         cartography.intel.keycloak.groups.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm_id=realm['id'],
+            realm=None,
         )
     
         cartography.intel.keycloak.users.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm_id=realm['id'],
+            realm=None,
         )
     
 

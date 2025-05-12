@@ -24,19 +24,19 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
-    realm_id,
+    realm,
 ) -> List[Dict]:
     users = get(
         api_session,
         common_job_parameters['BASE_URL'],
-        realm_id,
+        realm,
     )
     # CHANGEME: You can configure here a transform operation
     # formated_users = transform(users)
     load_users(
         neo4j_session,
         users,  # CHANGEME: replace with `formated_users` if your added a transform step
-        realm_id,
+        realm,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -45,34 +45,26 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    realm_id,
+    realm,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
-    params = {'first': 0, 'max': 25}
-    keep_running = True
-    while keep_running:
-        keep_running = False  # To avoid any infinite loop
-        req = api_session.get(
-            "{base_url}/admin/realms/{realm}/users".format(
-                base_url=base_url,
-                realm=realm_id,
-            ),
-            params=params,
-            timeout=_TIMEOUT
-        )
-        req.raise_for_status()
-        sub_results = req.json()
-        results.extend(sub_results)
-        if len(sub_results) == 25:
-            keep_running = True
-        params['first'] += len(sub_results)
+    # CHANGEME: You have to handle pagination if needed
+    req = api_session.get(
+        "{base_url}".format(
+            base_url=base_url,
+            realm=realm,
+        ),
+        timeout=_TIMEOUT
+    )
+    req.raise_for_status()
+    results = req.json()
     return results
 
 
 def load_users(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    realm_id,
+    realm,
     update_tag: int,
 ) -> None:
     load(
@@ -80,7 +72,7 @@ def load_users(
         KeycloakUserSchema(),
         data,
         lastupdated=update_tag,
-        realm_id=realm_id,
+        realm=realm,
     )
 
 

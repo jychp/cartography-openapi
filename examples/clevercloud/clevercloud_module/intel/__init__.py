@@ -44,19 +44,20 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
         neo4j_session,
         api_session,
         common_job_parameters,
+        id=None,
     ):
         cartography.intel.clevercloud.applications.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            organization_id=organization['id'],
+            id=None,
         )
     
         cartography.intel.clevercloud.addons.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            organization_id=organization['id'],
+            id=None,
         )
     
 

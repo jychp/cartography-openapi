@@ -24,16 +24,19 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
+    realm,
 ) -> List[Dict]:
     realms = get(
         api_session,
         common_job_parameters['BASE_URL'],
+        realm,
     )
     # CHANGEME: You can configure here a transform operation
     # formated_realms = transform(realms)
     load_realms(
         neo4j_session,
         realms,  # CHANGEME: replace with `formated_realms` if your added a transform step
+        realm,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -42,12 +45,14 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
+    realm,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
-        "{base_url}/admin/realms".format(
+        "{base_url}".format(
             base_url=base_url,
+            realm=realm,
         ),
         timeout=_TIMEOUT
     )
@@ -59,6 +64,7 @@ def get(
 def load_realms(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
+    realm,
     update_tag: int,
 ) -> None:
     load(
@@ -66,6 +72,7 @@ def load_realms(
         KeycloakRealmSchema(),
         data,
         lastupdated=update_tag,
+        realm=realm,
     )
 
 

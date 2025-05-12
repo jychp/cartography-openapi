@@ -7,7 +7,6 @@ from cartography.models.core.relationships import CartographyRelProperties
 from cartography.models.core.relationships import CartographyRelSchema
 from cartography.models.core.relationships import LinkDirection
 from cartography.models.core.relationships import make_target_node_matcher
-from cartography.models.core.relationships import OtherRelationships
 from cartography.models.core.relationships import TargetNodeMatcher
 
 
@@ -19,7 +18,6 @@ class CleverCloudAddonNodeProperties(CartographyNodeProperties):
     region: PropertyRef = PropertyRef('region')
     zone_id: PropertyRef = PropertyRef('zoneId')
     creation_date: PropertyRef = PropertyRef('creationDate')
-    config_keys: PropertyRef = PropertyRef('configKeys')
     provider_id: PropertyRef = PropertyRef('provider.id')
     plan_id: PropertyRef = PropertyRef('plan.id')
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
@@ -31,18 +29,17 @@ class CleverCloudAddonToOrganizationRelProperties(CartographyRelProperties):
 
 
 @dataclass(frozen=True)
-# (:CleverCloudAddon)-[:RESOURCE]->(:CleverCloudOrganization)
+# (:CleverCloudAddon)<-[:RESOURCE]-(:CleverCloudOrganization)
 class CleverCloudAddonToOrganizationRel(CartographyRelSchema):
     target_node_label: str = 'CleverCloudOrganization'
     target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
         {'id': PropertyRef('organization_id', set_in_kwargs=True)},
     )
-    direction: LinkDirection = LinkDirection.OUTWARD
+    direction: LinkDirection = LinkDirection.INWARD
     rel_label: str = "RESOURCE"
     properties: CleverCloudAddonToOrganizationRelProperties = CleverCloudAddonToOrganizationRelProperties()
 
 
-# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)
