@@ -4,8 +4,7 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "cartography-openapi"
-version = "0.3.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "jinja2" },
     { name = "loguru" },
