@@ -1,8 +1,7 @@
 import os
 from collections import OrderedDict
 
-from jinja2 import Environment
-from jinja2 import PackageLoader
+from jinja2 import Environment, PackageLoader
 
 from cartography_openapi.checklist import Checklist
 from cartography_openapi.entity import Entity

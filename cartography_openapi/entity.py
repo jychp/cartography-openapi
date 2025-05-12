@@ -1,8 +1,7 @@
 from collections import OrderedDict
 from typing import TYPE_CHECKING
 
-from jinja2 import Environment
-from jinja2 import PackageLoader
+from jinja2 import Environment, PackageLoader
 from loguru import logger
 
 from cartography_openapi.component import Component
