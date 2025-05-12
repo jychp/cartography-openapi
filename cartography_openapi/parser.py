@@ -138,7 +138,7 @@ class OpenAPIParser:
             if path_obj.returned_component is not None:
                 if path_obj.returned_component not in self.component_to_paths:
                     self.component_to_paths[path_obj.returned_component] = []
-                self.component_to_paths[path_obj.returned_component].append(path_obj)          
+                self.component_to_paths[path_obj.returned_component].append(path_obj)
 
         if len(self.components) == 0:
             logger.error("No components imported from the OpenAPI spec.")

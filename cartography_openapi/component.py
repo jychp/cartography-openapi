@@ -8,7 +8,24 @@ from cartography_openapi.path import Path
 
 
 class Field:
-    # DOC
+    """Represents a field of the OpenAPI schema.
+
+    The field is a part of the OpenAPI schema that defines a property of a component.
+    This class is used to store the properties of the field and the relations between fields.
+
+    See: https://swagger.io/specification/#schema-object
+    Args:
+        name (str): The name of the field.
+        clean_name (str): The clean name of the field (used as property in Cartography).
+
+    Attributes:
+        name (str): The name of the field.
+        clean_name (str): The clean name of the field (used as property in Cartography).
+        is_array (bool): True if the field is an array, False otherwise.
+        description (str | None): The description of the field.
+        example (str | None): The example of the field.
+        type (str | None): The type of the field.
+    """
 
     def __init__(self, name: str, clean_name: str) -> None:
         self.name = name
@@ -19,7 +36,15 @@ class Field:
         self.type: str | None = None
 
     def from_schema(self, schema: dict[str, Any]) -> bool:
-        # DOC
+        """Parse the schema of the field.
+        This method parses the schema of the field.
+        The method will return False if the schema cannot be parsed.
+
+        Args:
+            schema (dict[str, Any]): The schema of the field.
+        Returns:
+            bool: True if the schema has been parsed, False otherwise.
+        """
         self.description = schema.get("description")
         self.example = schema.get("example", "CHANGEME")
         schema_type = schema.get("type")
@@ -134,9 +159,12 @@ class Component:
                     "name": prop_name,
                     "linked_component": short_name,
                     "clean_name": self._name_to_field(prop_name),
-                    "is_array": False
+                    "is_array": False,
                 }
-            elif prop_details.get("type") == "array" and len(prop_details.get("items", {})) > 0:
+            elif (
+                prop_details.get("type") == "array"
+                and len(prop_details.get("items", {})) > 0
+            ):
                 if prop_details["items"].get("$ref") is not None:
                     short_name = prop_details["items"]["$ref"].split("/")[-1]
                     self.relations[prop_name] = {
