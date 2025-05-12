@@ -17,6 +17,7 @@ release-patch:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "Next version: $(NEXT_PATCH_VERSION)""
 	git checkout main
+	git pull
 	git tag $(NEXT_PATCH_VERSION)
 	git push origin $(NEXT_PATCH_VERSION)
 
@@ -24,6 +25,7 @@ release-minor:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "Next version: $(NEXT_MINOR_VERSION)"
 	git checkout main
+	git pull
 	git tag $(NEXT_MINOR_VERSION)
 	git push origin $(NEXT_MINOR_VERSION)
 
@@ -31,5 +33,6 @@ release-major:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "Next version: $(NEXT_MAJOR_VERSION)"
 	git checkout main
+	git pull
 	git tag $(NEXT_MAJOR_VERSION)
 	git push origin $(NEXT_MAJOR_VERSION)
