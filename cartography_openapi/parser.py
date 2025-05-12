@@ -192,7 +192,9 @@ class OpenAPIParser:
                                 path, consolidated_components.values()
                             )
                         else:
-                            component.set_direct_path(path, consolidated_components.values())
+                            component.set_direct_path(
+                                path, consolidated_components.values()
+                            )
 
                 if not found_indirect_path:
                     logger.error(f"No path found for {component_name}")
@@ -201,7 +203,9 @@ class OpenAPIParser:
             logger.debug(f"Processing {component_name} paths ({entity_name})")
             for path in paths:
                 if path.returns_array:
-                    component.set_enumeration_path(path, consolidated_components.values())
+                    component.set_enumeration_path(
+                        path, consolidated_components.values()
+                    )
                 else:
                     component.set_direct_path(path, consolidated_components.values())
 
@@ -220,7 +224,6 @@ class OpenAPIParser:
                 logger.debug(f"No parent component found for {component_name}")
 
             consolidated_components[component.name] = component
-
 
         for component in consolidated_components.values():
             entity = Entity(self.module, kwargs[component.name], component.name)
