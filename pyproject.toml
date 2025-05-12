@@ -19,10 +19,21 @@ Homepage = "https://github.com/jychp/cartography-openapi"
 Download = "https://github.com/jychp/cartography-openapi/releases"
 "Bug Report" = "https://github.com/jychp/cartography-openapi/issues"
 
-
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
     "pre-commit>=4.2.0",
     "pytest-cov>=6.1.1"
 ]
+
+[build-system]
+requires = [
+  "setuptools",
+  "setuptools-scm",
+  "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+# See configuration details in https://github.com/pypa/setuptools_scm
+write_to = "cartography_openapi/_version.py"
