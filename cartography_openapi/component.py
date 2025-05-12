@@ -1,6 +1,6 @@
 import re
 from collections import OrderedDict
-from typing import Any
+from typing import Any, Iterable
 
 from loguru import logger
 
@@ -199,7 +199,9 @@ class Component:
         )
         return local_name
 
-    def set_enumeration_path(self, path: Path, components: list["Component"]) -> bool:
+    def set_enumeration_path(
+        self, path: Path, components: Iterable["Component"]
+    ) -> bool:
         """Set the enumeration path of the component.
 
         The enumeration path is the path that is used to list all the components of the same type.
@@ -212,7 +214,7 @@ class Component:
 
         Args:
             path (Path): The path to set as the enumeration path.
-            components (list[Component]): The list of components to check against.
+            components (Iterable[Component]): The list of components to check against.
 
         Returns:
             bool: True if the path has been set as the enumeration path, False otherwise.
@@ -258,7 +260,7 @@ class Component:
             return True
         return False
 
-    def set_direct_path(self, path: Path, components: list["Component"]) -> bool:
+    def set_direct_path(self, path: Path, components: Iterable["Component"]) -> bool:
         """Set the direct path of the component.
 
         The direct path is the path that is used to get a single component.

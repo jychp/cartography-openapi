@@ -138,10 +138,7 @@ The following operations must be performed manually:
 
 **cartography-openapi** is a Proof of Concept, and many features are still missing (we are actively working on them):
 - The generated code does not handle authentication for API calls
-- The generated code does not manage links to other entities (except for `sub-resource` links)
 - Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
-- List components are not supported
-- Tests data are not provided
 - The parser is not able to handle ref in parameter schemas
 
 ## License
@@ -159,5 +156,4 @@ Here are the topics we are working on for upcoming releases:
 - [ ] handle API response with dict like `{'users': [], 'count': 12}`
 - [ ] handle authentication
 - [ ] handle query with variable param in path
-- [ ] handle "other_links"
 - [ ] generate Cartography config
