@@ -34,13 +34,9 @@ class Field:
         self.type = schema_type
         # TODO: handle ref
         if schema_type == "$ref":
-            logger.debug(f"Parsing object field {self.name}")
             return False
         # TODO: handle recursion
         if schema_type == "object":
-            logger.warning(
-                f"Field {self.name} is an object, too many recursions to handle it"
-            )
             return False
 
         return True
@@ -68,7 +64,7 @@ class Component:
         parent_component (Component): The parent component of the component.
     """
 
-    _FIELDS: dict[str, Field] = {}
+    FIELDS: dict[str, Field] = {}
 
     def __init__(self, name: str) -> None:
         self.name = name
@@ -77,6 +73,7 @@ class Component:
         self.direct_path: Path | None = None
         self.enumeration_path: Path | None = None
         self.parent_component: "Component" | None = None
+        self._unresolved_ref: list[tuple[str, dict[str, Any]]] = []
 
     @property
     def path_id(self) -> str:
@@ -124,17 +121,16 @@ class Component:
         if schema.get("type", "object") != "object":
             field = Field(self.name, self._name_to_field(self.name))
             if field.from_schema(schema):
-                self._FIELDS[self.name] = field
+                self.FIELDS[self.name] = field
                 return True
             return False
 
         for prop_name, prop_details in schema.get("properties", {}).items():
-            # BUG: Check here if it's a reference to another component or simply a typed field
             if prop_details.get("$ref") is not None:
-                linked_component = prop_details["$ref"].split("/")[-1]
+                short_name = prop_details["$ref"].split("/")[-1]
                 self.relations[prop_name] = {
                     "name": prop_name,
-                    "linked_component": linked_component,
+                    "linked_component": short_name,
                     "clean_name": self._name_to_field(prop_name),
                 }
             elif prop_details.get("type") == "object":

@@ -183,15 +183,25 @@ class Entity:
         # Build fields from relations
         for rel_name, rel in component.relations.items():
             rel_field_name = f"{rel['clean_name']}_id"
-            if rel["linked_component"] in consolidated_components:
+            if rel["linked_component"] in component.FIELDS:
+                typed_field = component.FIELDS[rel["linked_component"]]
+                self.fields[rel_name] = {
+                    "name": rel_name,
+                    "type": typed_field.type,
+                    "description": typed_field.description,
+                    "example": typed_field.example,
+                    "is_array": typed_field.is_array,
+                }
+            elif rel["linked_component"] in consolidated_components:
                 # TODO: Create a link
                 raise NotImplementedError("Not implemented")
-            self.fields[rel_field_name] = {
-                "name": f"{rel_name}.id",
-                "type": "string",
-                "is_array": False,
-                "description": f"ID of the {rel['linked_component']} entity",
-            }
+            else:
+                self.fields[rel_field_name] = {
+                    "name": f"{rel_name}.id",
+                    "type": "string",
+                    "is_array": False,
+                    "description": f"ID of the {rel['linked_component']} entity",
+                }
 
         # Build sub_resource link
         if component.parent_component is not None:
@@ -215,9 +225,6 @@ class Entity:
             str: the content of the model python file.
         """
         template = self._jinja_env.get_template("model.jinja")
-
-        print(self.fields)
-
         return template.render(entity=self)
 
     def export_intel(self) -> str:
