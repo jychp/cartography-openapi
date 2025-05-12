@@ -185,7 +185,7 @@ class OpenAPIParser:
                 found_indirect_path = False
                 for ic, ref in self.reverse_components.get(component_name, []):
                     for path in self.component_to_paths.get(ic.name, []):
-                        path.indirect_ref = ref
+                        path.set_indirect_ref(ref)
                         found_indirect_path = True
                         if ic.relations[ref]["is_array"]:
                             component.set_enumeration_path(

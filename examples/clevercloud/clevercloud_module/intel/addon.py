@@ -24,19 +24,19 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
-    organization_id,
+    id,
 ) -> List[Dict]:
     addons = get(
         api_session,
         common_job_parameters['BASE_URL'],
-        organization_id,
+        id,
     )
     # CHANGEME: You can configure here a transform operation
     # formated_addons = transform(addons)
     load_addons(
         neo4j_session,
         addons,  # CHANGEME: replace with `formated_addons` if your added a transform step
-        organization_id,
+        id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -45,14 +45,14 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    organization_id,
+    id,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
-        "{base_url}/organisations/{id}/addons".format(
+        "{base_url}".format(
             base_url=base_url,
-            id=organization_id,
+            id=id,
         ),
         timeout=_TIMEOUT
     )
@@ -64,7 +64,7 @@ def get(
 def load_addons(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    organization_id,
+    id,
     update_tag: int,
 ) -> None:
     load(
@@ -72,7 +72,7 @@ def load_addons(
         CleverCloudAddonSchema(),
         data,
         lastupdated=update_tag,
-        organization_id=organization_id,
+        id=id,
     )
 
 

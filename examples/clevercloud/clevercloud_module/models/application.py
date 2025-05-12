@@ -7,7 +7,6 @@ from cartography.models.core.relationships import CartographyRelProperties
 from cartography.models.core.relationships import CartographyRelSchema
 from cartography.models.core.relationships import LinkDirection
 from cartography.models.core.relationships import make_target_node_matcher
-from cartography.models.core.relationships import OtherRelationships
 from cartography.models.core.relationships import TargetNodeMatcher
 
 
@@ -18,7 +17,6 @@ class CleverCloudApplicationNodeProperties(CartographyNodeProperties):
     description: PropertyRef = PropertyRef('description')
     zone: PropertyRef = PropertyRef('zone')
     zone_id: PropertyRef = PropertyRef('zoneId')
-    vhosts: PropertyRef = PropertyRef('vhosts')
     creation_date: PropertyRef = PropertyRef('creationDate')
     last_deploy: PropertyRef = PropertyRef('last_deploy')
     archived: PropertyRef = PropertyRef('archived')
@@ -35,11 +33,12 @@ class CleverCloudApplicationNodeProperties(CartographyNodeProperties):
     appliance: PropertyRef = PropertyRef('appliance')
     branch: PropertyRef = PropertyRef('branch')
     force_https: PropertyRef = PropertyRef('forceHttps')
-    env: PropertyRef = PropertyRef('env')
     deploy_url: PropertyRef = PropertyRef('deployUrl')
     instance_id: PropertyRef = PropertyRef('instance.id')
     deployment_id: PropertyRef = PropertyRef('deployment.id')
+    vhosts_id: PropertyRef = PropertyRef('vhosts.id')
     build_flavor_id: PropertyRef = PropertyRef('buildFlavor.id')
+    env_id: PropertyRef = PropertyRef('env.id')
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
@@ -49,18 +48,17 @@ class CleverCloudApplicationToOrganizationRelProperties(CartographyRelProperties
 
 
 @dataclass(frozen=True)
-# (:CleverCloudApplication)-[:RESOURCE]->(:CleverCloudOrganization)
+# (:CleverCloudApplication)<-[:RESOURCE]-(:CleverCloudOrganization)
 class CleverCloudApplicationToOrganizationRel(CartographyRelSchema):
     target_node_label: str = 'CleverCloudOrganization'
     target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
         {'id': PropertyRef('organization_id', set_in_kwargs=True)},
     )
-    direction: LinkDirection = LinkDirection.OUTWARD
+    direction: LinkDirection = LinkDirection.INWARD
     rel_label: str = "RESOURCE"
     properties: CleverCloudApplicationToOrganizationRelProperties = CleverCloudApplicationToOrganizationRelProperties()
 
 
-# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

@@ -58,18 +58,8 @@ class Path:
         if not response_schema:
             logger.debug("Skipping, no response schema found")
             return
-
-        if response_schema.get("type") == "array":
-            self.returns_array = True
-            # TODO: Handle dict responses ex: {'users': [], 'count': 10}
-            component_name = response_schema.get("items").get("$ref")
-        else:
-            component_name = response_schema.get("$ref")
-
-        if not component_name:
+        if not self._guess_returned_component(response_schema):
             logger.debug("Skipping, no component name found")
-            return
-        self.returned_component = component_name.split("/")[-1]
 
         for param in method.get("parameters", []):
             # TODO: handled ref
@@ -98,6 +88,55 @@ class Path:
                 if k in self.query_params:
                     self.pagination = Pagination(self)
                     break
+
+    def set_indirect_ref(self, ref: str) -> None:
+        """Set the indirect reference to the entity in the path.
+
+        Args:
+            ref (str): The indirect reference to the entity in the path (eg: {'result': []})
+        """
+        if self.indirect_ref is None:
+            self.indirect_ref = ref
+        else:
+            self.indirect_ref = f"{self.indirect_ref}.{ref}"
+
+    def _guess_returned_component(self, response_schema: dict[str, Any]) -> bool:
+        # DOC
+        if "allOf" in response_schema:
+            # Usually, the common stuff (like pagination) is in the first schema
+            # and the specific stuff is in the last schema
+            for schema in reversed(response_schema["allOf"]):
+                if self._guess_returned_component(schema):
+                    return True
+            return False
+
+        component_name = None
+        if response_schema.get("type") == "object":
+            for k, v in response_schema.get("properties", {}).items():
+                if v.get("$ref"):
+                    component_name = v.get("$ref")
+                    self.set_indirect_ref(k)
+                    break
+        elif "properties" in response_schema:
+            # If the response schema is an object but doesn't have a type, we assume it's a component
+            for k, v in response_schema.get("properties", {}).items():
+                if v.get("$ref"):
+                    component_name = v.get("$ref")
+                    self.indirect_ref = k
+                    break
+                elif v.get("type") == "array":
+                    self.returns_array = True
+                    if v.get("items", {}).get("$ref"):
+                        component_name = v.get("items", {}).get("$ref")
+                        self.set_indirect_ref(k)
+                        break
+        else:
+            component_name = response_schema.get("$ref")
+
+        if component_name:
+            self.returned_component = component_name.split("/")[-1]
+            return True
+        return False
 
     def is_sub_path_of(self, other: "Path", max_args: int = 0) -> bool:
         """Check if the path is a sub-path of another path.

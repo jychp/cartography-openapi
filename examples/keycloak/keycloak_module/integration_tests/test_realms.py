@@ -22,12 +22,14 @@ def test_load_keycloak_realms(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.keycloak.com",
     }
+    realm = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.keycloak.realms.sync(
         neo4j_session,
         api_session,
         common_job_parameters,
+        realm,
     )
 
     # Assert Realms exist

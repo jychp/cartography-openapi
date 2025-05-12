@@ -22,14 +22,14 @@ def test_load_clevercloud_applications(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.clevercloud.com",
     }
-    organization_id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
+    id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.clevercloud.applications.sync(
         neo4j_session,
         api_session,
         common_job_parameters,
-        organization_id,
+        id,
     )
 
     # Assert Applications exist

@@ -1,7 +1,5 @@
 ## CleverCloud Configuration
 
-.. _clevercloud_config:
-
 Follow these steps to analyze CleverCloud objects with Cartography.
 
 # CHANGEME: Please provide how to configure (eg. generate API Key, CLI arguments etc ...)
