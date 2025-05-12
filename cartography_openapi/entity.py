@@ -152,7 +152,7 @@ class Entity:
         return result
 
     def build_from_component(
-        self, component: Component, consolidated_entities: dict[str, Component]
+        self, component: Component, consolidated_entities: dict[str, "Entity"]
     ) -> None:
         """Build the entity from a component.
 
@@ -162,7 +162,7 @@ class Entity:
 
         Args:
             component (Component): The component to build the entity from.
-            consolidated_entities (dict[str, Component]): The list of all components that will be added to the module.
+            consolidated_entities (dict[str, Entity]): The list of all Entity that will be added to the module.
         """
         self.enumeration_path = component.enumeration_path
         self.path_id = component.path_id
