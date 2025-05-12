@@ -151,8 +151,6 @@ class Component:
             return False
 
         for prop_name, prop_details in schema.get("properties", {}).items():
-            if self.name == "iam_response_collection_accounts":
-                print(prop_name, prop_details)
             if prop_details.get("$ref") is not None:
                 short_name = prop_details["$ref"].split("/")[-1]
                 self.relations[prop_name] = {
