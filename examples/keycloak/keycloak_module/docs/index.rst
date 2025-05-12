@@ -1,7 +1,0 @@
-Keycloak
-########
-
-.. toctree::
-
-    config
-    schema

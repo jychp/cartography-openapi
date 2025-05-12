@@ -31,11 +31,11 @@ def sync(
         common_job_parameters['BASE_URL'],
         realm_id,
     )
-    # FIXME: You can configure here a transform operation
+    # CHANGEME: You can configure here a transform operation
     # formated_clients = transform(clients)
     load_clients(
         neo4j_session,
-        clients,  # FIXME: replace with `formated_clients` if your added a transform step
+        clients,  # CHANGEME: replace with `formated_clients` if your added a transform step
         realm_id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)

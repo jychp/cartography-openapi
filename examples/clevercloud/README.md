@@ -4,7 +4,7 @@
 
 ### Using local specifications
 ```
-uv run python3 cartography_openapi -v -n CleverCloud -f ./example/clevercloud/openapi.json -i "/self*" OrganisationView=Organization ApplicationView=Application AddonView=Addon
+uv run python3 cartography_openapi -v -n CleverCloud -f ./examples/clevercloud/openapi.json -i "/self*" OrganisationView=Organization ApplicationView=Application AddonView=Addon
 ```
 
 ### Using remote specifications

@@ -1,4 +1,4 @@
-# {{ module.name }}
+# CleverCloud
 
 ```{toctree}
 config

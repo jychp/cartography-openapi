@@ -22,7 +22,7 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.clevercloud.com",
     }
-    organization_id = 'CHANGEME'  # FIXME: Add here expected parent id node
+    organization_id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.clevercloud.addons.sync(
@@ -34,7 +34,7 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
 
     # Assert Addons exist
     expected_nodes = {
-        # FIXME: Add here expected node from data
+        # CHANGEME: Add here expected node from data
         # (123456, 'john.doe@domain.tld'),
     }
     assert check_nodes(
@@ -45,7 +45,7 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
 
     # Assert Addons are connected with Organization
     expected_rels = {
-        ('CHANGE_ME', organization_id),  # FIXME: Add here one of Addons id
+        ('CHANGE_ME', organization_id),  # CHANGEME: Add here one of Addons id
     }
     assert check_rels(
         neo4j_session,

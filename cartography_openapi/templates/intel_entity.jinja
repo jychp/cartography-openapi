@@ -35,11 +35,11 @@ def sync(
         {{ arg.var_name }},
         {% endfor %}
     )
-    # FIXME: You can configure here a transform operation
+    # CHANGEME: You can configure here a transform operation
     # formated_{{ entity.name|lower}}s = transform({{ entity.name|lower}}s)
     load_{{ entity.name|lower}}s(
         neo4j_session,
-        {{ entity.name|lower}}s,  # FIXME: replace with `formated_{{ entity.name|lower}}s` if your added a transform step
+        {{ entity.name|lower}}s,  # CHANGEME: replace with `formated_{{ entity.name|lower}}s` if your added a transform step
         {% for arg in entity.needed_params.values() %}
         {{ arg.var_name }},
         {% endfor %}
@@ -78,7 +78,7 @@ def get(
             keep_running = True
         {{ entity.enumeration_path.pagination.increment_instruction }}
 {% else %}
-    # FIXME: You have to handle pagination if needed
+    # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}{{ entity.enumeration_path.path }}".format(
             base_url=base_url,
@@ -89,7 +89,11 @@ def get(
         timeout=_TIMEOUT
     )
     req.raise_for_status()
+    {% if entity.enumeration_path.indirect_ref %}
+    results = req.json()["{{entity.enumeration_path.indirect_ref}}"]
+    {% else %}
     results = req.json()
+    {% endif %}
 {% endif %}
     return results
 

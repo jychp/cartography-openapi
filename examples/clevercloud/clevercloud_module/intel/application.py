@@ -31,11 +31,11 @@ def sync(
         common_job_parameters['BASE_URL'],
         organization_id,
     )
-    # FIXME: You can configure here a transform operation
+    # CHANGEME: You can configure here a transform operation
     # formated_applications = transform(applications)
     load_applications(
         neo4j_session,
-        applications,  # FIXME: replace with `formated_applications` if your added a transform step
+        applications,  # CHANGEME: replace with `formated_applications` if your added a transform step
         organization_id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
@@ -48,7 +48,7 @@ def get(
     organization_id,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
-    # FIXME: You have to handle pagination if needed
+    # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}/organisations/{id}/applications".format(
             base_url=base_url,

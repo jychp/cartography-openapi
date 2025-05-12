@@ -1,4 +1,4 @@
-# {{ module.name }}
+# Keycloak
 
 ```{toctree}
 config

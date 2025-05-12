@@ -143,7 +143,7 @@ class Module:
         # Create docs
         docs_dir = os.path.join(module_dir, "docs")
         os.makedirs(docs_dir, exist_ok=True)
-        with open(os.path.join(docs_dir, "index.rst"), "w", encoding="utf-8") as f:
+        with open(os.path.join(docs_dir, "index.md"), "w", encoding="utf-8") as f:
             f.write(self.export_template("docs_index.jinja"))
         with open(os.path.join(docs_dir, "config.md"), "w", encoding="utf-8") as f:
             f.write(self.export_template("docs_config.jinja"))

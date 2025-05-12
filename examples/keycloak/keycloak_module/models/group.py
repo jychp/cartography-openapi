@@ -18,11 +18,7 @@ class KeycloakGroupNodeProperties(CartographyNodeProperties):
     path: PropertyRef = PropertyRef('path')
     parent_id: PropertyRef = PropertyRef('parentId')
     sub_group_count: PropertyRef = PropertyRef('subGroupCount')
-    sub_groups: PropertyRef = PropertyRef('subGroups')
-    attributes: PropertyRef = PropertyRef('attributes')
-    realm_roles: PropertyRef = PropertyRef('realmRoles')
-    client_roles: PropertyRef = PropertyRef('clientRoles')
-    access: PropertyRef = PropertyRef('access')
+    sub_groups_id: PropertyRef = PropertyRef('subGroups.id')
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 
 
@@ -43,7 +39,7 @@ class KeycloakGroupToRealmRel(CartographyRelSchema):
     properties: KeycloakGroupToRealmRelProperties = KeycloakGroupToRealmRelProperties()
 
 
-# TODO: Add other links
+# CHANGEME: Add other links
 
 
 @dataclass(frozen=True)

@@ -29,11 +29,11 @@ def sync(
         api_session,
         common_job_parameters['BASE_URL'],
     )
-    # FIXME: You can configure here a transform operation
+    # CHANGEME: You can configure here a transform operation
     # formated_realms = transform(realms)
     load_realms(
         neo4j_session,
-        realms,  # FIXME: replace with `formated_realms` if your added a transform step
+        realms,  # CHANGEME: replace with `formated_realms` if your added a transform step
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -44,7 +44,7 @@ def get(
     base_url: str,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
-    # FIXME: You have to handle pagination if needed
+    # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}/admin/realms".format(
             base_url=base_url,

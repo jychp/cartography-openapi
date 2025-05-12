@@ -142,6 +142,7 @@ The following operations must be performed manually:
 - Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
 - List components are not supported
 - Tests data are not provided
+- The parser is not able to handle ref in parameter schemas
 
 ## License
 
@@ -156,9 +157,7 @@ None so far :(
 Here are the topics we are working on for upcoming releases:
 
 - [ ] handle API response with dict like `{'users': [], 'count': 12}`
-- [ ] handle API response where list are handled as componenet (ex: UserView, UserListView)
 - [ ] handle authentication
 - [ ] handle query with variable param in path
 - [ ] handle "other_links"
-- [ ] generate Cartography data for tests
 - [ ] generate Cartography config

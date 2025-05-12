@@ -23,7 +23,7 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
         "BASE_URL": "https://fake.{{ entity._module.name | lower }}.com",
     }
     {% for param in entity.needed_params.values() %}
-    {{ param.var_name }} = 'CHANGEME'  # FIXME: Add here expected parent id node
+    {{ param.var_name }} = 'CHANGEME'  # CHANGEME: Add here expected parent id node
     {% endfor %}
 
     # Act
@@ -31,7 +31,7 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
 
     # Assert {{ entity.name }}s exist
     expected_nodes = {
-        # FIXME: Add here expected node from data
+        # CHANGEME: Add here expected node from data
         # (123456, 'john.doe@domain.tld'),
     }
     assert check_nodes(
@@ -43,7 +43,7 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
     {% if entity.parent_entity %}
     # Assert {{ entity.name }}s are connected with {{ entity.parent_entity.name }}
     expected_rels = {
-        ('CHANGE_ME', {{ entity.parent_entity.name|lower }}_id),  # FIXME: Add here one of {{ entity.name}}s id
+        ('CHANGE_ME', {{ entity.parent_entity.name|lower }}_id),  # CHANGEME: Add here one of {{ entity.name}}s id
     }
     assert check_rels(
         neo4j_session,

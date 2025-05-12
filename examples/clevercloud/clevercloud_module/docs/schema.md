@@ -5,7 +5,7 @@
 
 ### Organization
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
@@ -41,7 +41,7 @@
 
 ### Application
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
@@ -84,7 +84,7 @@
 
 ### Addon
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
