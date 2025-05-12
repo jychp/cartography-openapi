@@ -26,13 +26,13 @@ class {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties(Cartog
 
 
 @dataclass(frozen=True)
-# (:{{ entity.node_name }})-[:RESOURCE]->(:{{ entity.parent_entity.node_name }})
+# (:{{ entity.node_name }})<-[:RESOURCE]-(:{{ entity.parent_entity.node_name }})
 class {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel(CartographyRelSchema):
     target_node_label: str = '{{ entity.parent_entity.node_name }}'
     target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
         {'id': PropertyRef('{{ entity.parent_entity.name|lower}}_id', set_in_kwargs=True)},
     )
-    direction: LinkDirection = LinkDirection.OUTWARD
+    direction: LinkDirection = LinkDirection.INWARD
     rel_label: str = "RESOURCE"
     properties: {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties = {{ entity.node_name}}To{{ entity.parent_entity.name }}RelProperties()
 {% endif %}
