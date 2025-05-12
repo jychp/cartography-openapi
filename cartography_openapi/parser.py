@@ -165,7 +165,8 @@ class OpenAPIParser:
         if not self._ready:
             logger.error("OpenAPI spec not ready, cannot build the module.")
             return False
-        consolidated_components: list[Component] = []
+        consolidated_components: dict[str, Component] = {}
+        consolidated_entities: dict[str, Entity] = {}
 
         for component_name, entity_name in kwargs.items():
             logger.info(f"Building model for {component_name} as {entity_name}")
@@ -188,10 +189,10 @@ class OpenAPIParser:
                         found_indirect_path = True
                         if ic.relations[ref]["is_array"]:
                             component.set_enumeration_path(
-                                path, consolidated_components
+                                path, consolidated_components.values()
                             )
                         else:
-                            component.set_direct_path(path, consolidated_components)
+                            component.set_direct_path(path, consolidated_components.values())
 
                 if not found_indirect_path:
                     logger.error(f"No path found for {component_name}")
@@ -200,13 +201,13 @@ class OpenAPIParser:
             logger.debug(f"Processing {component_name} paths ({entity_name})")
             for path in paths:
                 if path.returns_array:
-                    component.set_enumeration_path(path, consolidated_components)
+                    component.set_enumeration_path(path, consolidated_components.values())
                 else:
-                    component.set_direct_path(path, consolidated_components)
+                    component.set_direct_path(path, consolidated_components.values())
 
             # Find the parent component
             if component.direct_path is not None:
-                for c in consolidated_components:
+                for c in consolidated_components.values():
                     if c.direct_path is None:
                         continue
                     if component.direct_path.is_sub_path_of(c.direct_path, 1):
@@ -218,11 +219,13 @@ class OpenAPIParser:
             if component.parent_component is None:
                 logger.debug(f"No parent component found for {component_name}")
 
-            consolidated_components.append(component)
+            consolidated_components[component.name] = component
 
-        for component in consolidated_components:
+
+        for component in consolidated_components.values():
             entity = Entity(self.module, kwargs[component.name], component.name)
-            entity.build_from_component(component, consolidated_components)
+            entity.build_from_component(component, consolidated_entities)
+            consolidated_entities[component.name] = entity
             self.module.add_entity(entity)
 
         return True

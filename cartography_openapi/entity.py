@@ -50,6 +50,7 @@ class Entity:
         self.children_entities: list["Entity"] = []
         self.enumeration_path: Path | None = None
         self.path_id: str | None = None
+        self.related_entities: dict[str, dict[str, Any]] = {}
 
     @property
     def node_name(self) -> str:
@@ -151,7 +152,7 @@ class Entity:
         return result
 
     def build_from_component(
-        self, component: Component, consolidated_components: list[Component]
+        self, component: Component, consolidated_entities: dict[str, Component]
     ) -> None:
         """Build the entity from a component.
 
@@ -161,7 +162,7 @@ class Entity:
 
         Args:
             component (Component): The component to build the entity from.
-            consolidated_components (list[Component]): The list of all components that will be added to the module.
+            consolidated_entities (dict[str, Component]): The list of all components that will be added to the module.
         """
         self.enumeration_path = component.enumeration_path
         self.path_id = component.path_id
@@ -192,9 +193,12 @@ class Entity:
                     "example": typed_field.example,
                     "is_array": typed_field.is_array,
                 }
-            elif rel["linked_component"] in consolidated_components:
-                # TODO: Create a link
-                raise NotImplementedError("Not implemented")
+            elif rel["linked_component"] in consolidated_entities:
+                self.related_entities[rel_name] = {
+                    "entity": consolidated_entities[rel["linked_component"]],
+                    "name": f"{rel_name}.id",
+                    "to_many": rel["is_array"],
+                }
             else:
                 self.fields[rel_field_name] = {
                     "name": f"{rel_name}.id",

@@ -7,7 +7,9 @@ from cartography.models.core.relationships import CartographyRelProperties
 from cartography.models.core.relationships import CartographyRelSchema
 from cartography.models.core.relationships import LinkDirection
 from cartography.models.core.relationships import make_target_node_matcher
+{% if entity.related_entities|length > 0 %}
 from cartography.models.core.relationships import OtherRelationships
+{% endif %}
 from cartography.models.core.relationships import TargetNodeMatcher
 
 
@@ -38,7 +40,31 @@ class {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel(CartographyRelSc
 {% endif %}
 
 
-# CHANGEME: Add other links
+{% for name, link_details in entity.related_entities.items() %}
+@dataclass(frozen=True)
+class {{ entity.node_name}}To{{ link_details.entity.node_name}}Properties(CartographyRelProperties):
+    lastupdated: PropertyRef = PropertyRef("lastupdated", set_in_kwargs=True)
+
+
+@dataclass(frozen=True)
+# CHANGEME: Change `LINKED_TO` relation name
+# (:{{ link_details.entity.node_name }})-[:LINKED_TO]->(:{{ entity.node_name }})
+class {{ entity.node_name}}To{{ link_details.entity.node_name}}Rel(CartographyRelSchema):
+    target_node_label: str = "{{ link_details.entity.node_name}}"
+    target_node_matcher: TargetNodeMatcher = make_target_node_matcher(
+        {"id": PropertyRef(
+            "{{ link_details.name }}",
+            {% if link_details.to_many %}
+            one_to_many=True,
+            {% endif %}
+        )},
+    )
+    direction: LinkDirection = LinkDirection.INWARD
+    rel_label: str = "LINKED_TO"
+    properties: {{ entity.node_name}}To{{ link_details.entity.node_name}}Properties = (
+        {{ entity.node_name}}To{{ link_details.entity.node_name}}Properties()
+    )
+{% endfor %}
 
 
 @dataclass(frozen=True)
@@ -48,11 +74,11 @@ class {{ entity.node_class }}(CartographyNodeSchema):
     {% if entity.parent_entity %}
     sub_resource_relationship: {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel = {{ entity.node_name}}To{{ entity.parent_entity.name }}Rel()
     {% endif %}
-    {% if entity.links|length > 1 %}
+    {% if entity.related_entities|length > 0 %}
     other_relationships: OtherRelationships = OtherRelationships(
         [
-    {% for link in entity.links %}
-            {{ entity.node_name}}To{{ link.parent.name }}Rel(),
+    {% for related in entity.related_entities.values() %}
+            {{ entity.node_name}}To{{ related.entity.node_name }}Rel(),
     {% endfor %}
         ],
     )
