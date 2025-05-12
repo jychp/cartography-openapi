@@ -79,11 +79,11 @@ _See `cartography_openapi.module.Module.export`_
 
 ```pip3 install cartography-openapi```
 
-### Using poetry
+### Using uv
 
 ```
-poetry install
-poetry run python3 cartography_openapi
+uv sync --frozen
+uv run python3 cartography_openapi
 ```
 
 ## Usage
@@ -92,7 +92,7 @@ poetry run python3 cartography_openapi
 
 ```
 wget https://www.keycloak.org/docs-api/latest/rest-api/openapi.json
-poetry run python3 main.py -v -n Keycloak -f ./openapi.json RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
+uv run python3 main.py -v -n Keycloak -f ./openapi.json RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
 ```
 
 For more examples, refer to the [examples](./examples/) folder.
