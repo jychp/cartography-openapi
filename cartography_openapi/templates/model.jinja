@@ -13,8 +13,8 @@ from cartography.models.core.relationships import TargetNodeMatcher
 
 @dataclass(frozen=True)
 class {{ entity.node_name }}NodeProperties(CartographyNodeProperties):
-    {% for field_name, remote_name in entity.fields.items() %}
-    {{ field_name }}: PropertyRef = PropertyRef('{{ remote_name }}')
+    {% for field_name, field_details in entity.fields.items() %}
+    {{ field_name }}: PropertyRef = PropertyRef('{{ field_details.name }}')
     {% endfor %}
     lastupdated: PropertyRef = PropertyRef('lastupdated', set_in_kwargs=True)
 

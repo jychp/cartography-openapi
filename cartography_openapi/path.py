@@ -26,6 +26,7 @@ class Path:
         returns_array (bool): True if the endpoint returns an array, False otherwise.
         returned_component (str): The name of the component returned by the endpoint.
         pagination (Pagination): The pagination of the endpoint.
+        indirect_ref (str): The indirect reference to the entity in the path (eg: {'result': []})
     """
 
     def __init__(self, path: str, get_method: dict[str, Any]) -> None:
@@ -36,6 +37,7 @@ class Path:
         self.returns_array: bool = False
         self.returned_component: str | None = None
         self.pagination: Pagination | None = None
+        self.indirect_ref: str | None = None
         self._from_method(get_method)
 
     def _from_method(self, method: dict[str, Any]) -> None:

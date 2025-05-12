@@ -7,6 +7,45 @@ from loguru import logger
 from cartography_openapi.path import Path
 
 
+class Field:
+    # DOC
+
+    def __init__(self, name: str, clean_name: str) -> None:
+        self.name = name
+        self.clean_name = clean_name
+        self.is_array: bool = False
+        self.description: str | None = None
+        self.example: str | None = None
+        self.type: str | None = None
+
+    def from_schema(self, schema: dict[str, Any]) -> bool:
+        # DOC
+        self.description = schema.get("description")
+        self.example = schema.get("example")
+        schema_type = schema.get("type")
+        # Handle array of objects
+        if schema_type == "array" and len(schema.get("items", {})) == 0:
+            self.type = "string"
+            self.is_array = True
+            return True
+        if schema.get("type") == "array":
+            self.is_array = True
+            schema_type = schema.get("items", {}).get("type", "unknown")
+        self.type = schema_type
+        # TODO: handle ref
+        if schema_type == "$ref":
+            logger.debug(f"Parsing object field {self.name}")
+            return False
+        # TODO: handle recursion
+        if schema_type == "object":
+            logger.warning(
+                f"Field {self.name} is an object, too many recursions to handle it"
+            )
+            return False
+
+        return True
+
+
 class Component:
     """Represents a component of the OpenAPI schema.
 
@@ -21,7 +60,7 @@ class Component:
 
     Attributes:
         name (str): The name of the component.
-        properties (OrderedDict[str, dict[str, Any]]): The properties of the component.
+        properties (OrderedDict[str, Field]): The properties of the component.
         relations (OrderedDict[str, dict[str, Any]]): The relations of the component
             (properties that return an other component).
         direct_path (Path): The direct path of the component.
@@ -29,9 +68,11 @@ class Component:
         parent_component (Component): The parent component of the component.
     """
 
+    _FIELDS: dict[str, Field] = {}
+
     def __init__(self, name: str) -> None:
         self.name = name
-        self.properties: OrderedDict[str, dict[str, Any]] = OrderedDict()
+        self.properties: OrderedDict[str, Field] = OrderedDict()
         self.relations: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.direct_path: Path | None = None
         self.enumeration_path: Path | None = None
@@ -75,25 +116,20 @@ class Component:
         Returns:
             bool: True if the schema has been parsed, False otherwise.
         """
-        if 'allOf' in schema:
-            logger.debug(f"Parsing allOf in {self.name} with recursion")
-            for sub_schema in schema['allOf']:
+        if "allOf" in schema:
+            for sub_schema in schema["allOf"]:
                 self.from_schema(sub_schema)
             return True
 
         if schema.get("type", "object") != "object":
-            logger.debug(
-                f"Parsing of non-object components not yet implemented ({self.name})"
-            )
+            field = Field(self.name, self._name_to_field(self.name))
+            if field.from_schema(schema):
+                self._FIELDS[self.name] = field
+                return True
             return False
 
         for prop_name, prop_details in schema.get("properties", {}).items():
-            parsed_property: dict[str, Any] = {
-                "name": prop_name,
-                "is_array": False,
-                "type": "string",
-                "clean_name": self._name_to_field(prop_name),
-            }
+            # BUG: Check here if it's a reference to another component or simply a typed field
             if prop_details.get("$ref") is not None:
                 linked_component = prop_details["$ref"].split("/")[-1]
                 self.relations[prop_name] = {
@@ -101,9 +137,21 @@ class Component:
                     "linked_component": linked_component,
                     "clean_name": self._name_to_field(prop_name),
                 }
+            elif prop_details.get("type") == "object":
+                for sub_prop_name, sub_prop_details in prop_details.get(
+                    "properties", {}
+                ).items():
+                    field = Field(
+                        f"{prop_name}.{sub_prop_name}",
+                        f"{prop_name}_{self._name_to_field(sub_prop_name)}",
+                    )
+                    if field.from_schema(sub_prop_details):
+                        self.properties[field.name] = field
             else:
-                parsed_property["type"] = prop_details.get("type", "string")
-                self.properties[prop_name] = parsed_property
+                field = Field(prop_name, self._name_to_field(prop_name))
+                if field.from_schema(prop_details):
+                    self.properties[prop_name] = field
+
         return True
 
     def _name_to_field(self, name: str) -> str:
@@ -128,6 +176,7 @@ class Component:
 
         Args:
             path (Path): The path to set as the enumeration path.
+            components (list[Component]): The list of components to check against.
 
         Returns:
             bool: True if the path has been set as the enumeration path, False otherwise.

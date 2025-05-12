@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from jinja2 import Environment, PackageLoader
 from loguru import logger
@@ -44,7 +44,8 @@ class Entity:
             trim_blocks=True,
             lstrip_blocks=True,
         )
-        self.fields: OrderedDict[str, str] = OrderedDict()
+        # name, type, description, example, is_array
+        self.fields: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.parent_entity: "Entity" | None = None
         self.children_entities: list["Entity"] = []
         self.enumeration_path: Path | None = None
@@ -128,16 +129,13 @@ class Entity:
         }
 
         Returns:
-            dict[str, dict[str, str]]: The needed parameters to fetch the entity.
+            dict[str, dict[str, str | None]]: The needed parameters to fetch the entity.
         """
-        result: dict[str, dict[str, str]] = {}
+        result: dict[str, dict[str, str | None]] = {}
         if self.enumeration_path is None:
-            return {
-                self.path_id: {
-                    "var_name": self.path_id,
-                    "dict_name": None
-                }
-            }
+            if self.path_id is not None:
+                result[self.path_id] = {"var_name": self.path_id, "dict_name": None}
+            return result
         for p_name, p_data in self.enumeration_path.path_params.items():
             found_in_parent = False
             for parent in self.all_parents:
@@ -169,8 +167,18 @@ class Entity:
         self.path_id = component.path_id
 
         # Build fields from properties
-        for prop_name, prop in component.properties.items():
-            self.fields[prop["clean_name"]] = prop_name
+        for prop_name, field in component.properties.items():
+            self.fields[field.clean_name] = {
+                "name": prop_name,
+                "type": field.type,
+                "description": "",
+                "example": field.example,
+                "is_array": field.is_array,
+            }
+            if field.description is not None:
+                self.fields[field.clean_name]["description"] = (
+                    field.description.replace("\n", "<br/>")
+                )
 
         # Build fields from relations
         for rel_name, rel in component.relations.items():
@@ -178,7 +186,12 @@ class Entity:
             if rel["linked_component"] in consolidated_components:
                 # TODO: Create a link
                 raise NotImplementedError("Not implemented")
-            self.fields[rel_field_name] = f"{rel_name}.id"
+            self.fields[rel_field_name] = {
+                "name": f"{rel_name}.id",
+                "type": "string",
+                "is_array": False,
+                "description": f"ID of the {rel['linked_component']} entity",
+            }
 
         # Build sub_resource link
         if component.parent_component is not None:
@@ -202,6 +215,9 @@ class Entity:
             str: the content of the model python file.
         """
         template = self._jinja_env.get_template("model.jinja")
+
+        print(self.fields)
+
         return template.render(entity=self)
 
     def export_intel(self) -> str:

@@ -1,6 +1,5 @@
 ## {{ module.name }} Schema
 
-.. _{{ module.name|lower }}_schema:
 {% for entity in module.entities.values() %}
 
 
@@ -12,8 +11,8 @@
 |-------|-------------|
 | firstseen| Timestamp of when a sync job first created this node  |
 | lastupdated |  Timestamp of the last time the node was updated |
-{% for field in entity.fields %}
-| {{ field }} |       |
+{% for field, field_details in entity.fields.items() %}
+| {{ field }} | {{ field_details.description }} |
 {% endfor %}
 
 {% if entity.has_relationships %}
