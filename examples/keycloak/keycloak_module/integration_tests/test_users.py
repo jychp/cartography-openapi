@@ -22,7 +22,7 @@ def test_load_keycloak_users(mock_api, neo4j_session):
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.keycloak.com",
     }
-    realm_id = 'CHANGEME'  # FIXME: Add here expected parent id node
+    realm_id = 'XXX'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.keycloak.users.sync(
@@ -34,7 +34,7 @@ def test_load_keycloak_users(mock_api, neo4j_session):
 
     # Assert Users exist
     expected_nodes = {
-        # FIXME: Add here expected node from data
+        # CHANGEME: Add here expected node from data
         # (123456, 'john.doe@domain.tld'),
     }
     assert check_nodes(
@@ -45,7 +45,7 @@ def test_load_keycloak_users(mock_api, neo4j_session):
 
     # Assert Users are connected with Realm
     expected_rels = {
-        ('CHANGE_ME', realm_id),  # FIXME: Add here one of Users id
+        ('CHANGE_ME', realm_id),  # CHANGEME: Add here one of Users id
     }
     assert check_rels(
         neo4j_session,

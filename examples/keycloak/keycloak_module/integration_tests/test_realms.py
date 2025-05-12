@@ -32,7 +32,7 @@ def test_load_keycloak_realms(mock_api, neo4j_session):
 
     # Assert Realms exist
     expected_nodes = {
-        # FIXME: Add here expected node from data
+        # CHANGEME: Add here expected node from data
         # (123456, 'john.doe@domain.tld'),
     }
     assert check_nodes(

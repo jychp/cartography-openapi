@@ -19,7 +19,7 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
     :return: None
     """
 
-    # FIXME: Add here needed credentials
+    # CHANGEME: Add here needed credentials
     if not config.keycloak_apikey:
         logger.info(
             'Keycloak import is not configured - skipping this module. '
@@ -30,7 +30,7 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
     # Create requests sessions
     api_session = requests.session()
 
-    # FIXME: Configure the authentication
+    # CHANGEME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.keycloak_apikey}
     )

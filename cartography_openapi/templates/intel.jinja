@@ -19,7 +19,7 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
     :return: None
     """
 
-    # FIXME: Add here needed credentials
+    # CHANGEME: Add here needed credentials
     if not config.{{ module.name|lower}}_apikey:
         logger.info(
             '{{ module.name }} import is not configured - skipping this module. '
@@ -30,7 +30,7 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
     # Create requests sessions
     api_session = requests.session()
 
-    # FIXME: Configure the authentication
+    # CHANGEME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.{{ module.name|lower}}_apikey}
     )

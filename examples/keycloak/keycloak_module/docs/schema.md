@@ -5,7 +5,7 @@
 
 ### Realm
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
@@ -175,7 +175,7 @@
 
 ### Client
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
@@ -235,7 +235,7 @@
 
 ### Group
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|
@@ -261,7 +261,7 @@
 
 ### User
 
-# FIXME: Add a short description of the node and complete fields description
+# CHANGEME: Add a short description of the node and complete fields description
 
 | Field | Description |
 |-------|-------------|

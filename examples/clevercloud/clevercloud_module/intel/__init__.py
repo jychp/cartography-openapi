@@ -19,7 +19,7 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
     :return: None
     """
 
-    # FIXME: Add here needed credentials
+    # CHANGEME: Add here needed credentials
     if not config.clevercloud_apikey:
         logger.info(
             'CleverCloud import is not configured - skipping this module. '
@@ -30,7 +30,7 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
     # Create requests sessions
     api_session = requests.session()
 
-    # FIXME: Configure the authentication
+    # CHANGEME: Configure the authentication
     api_session.headers.update(
         {'X-Api-Key': config.clevercloud_apikey}
     )
