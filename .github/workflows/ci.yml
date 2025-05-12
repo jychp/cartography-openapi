@@ -10,7 +10,6 @@ permissions: read-all
 
 jobs:
   build-publish:
-    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -51,7 +50,9 @@ jobs:
       uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
       with:
         skip-existing: true
-    - uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1.16.0
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags')
+      uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1.16.0
       with:
         artifacts: "dist/*"
         generateReleaseNotes: "true"
