@@ -184,9 +184,9 @@ class Entity:
                 "is_array": field.is_array,
             }
             if field.description is not None:
-                self.fields[field.clean_name]["description"] = (
-                    field.description.strip().replace("\n", "<br/>")
-                )
+                self.fields[field.clean_name][
+                    "description"
+                ] = field.description.strip().replace("\n", "<br/>")
 
         # Build fields from relations
         for rel_name, rel in component.relations.items():
