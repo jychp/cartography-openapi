@@ -4,7 +4,7 @@
 
 ### Realm
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|
@@ -153,7 +153,7 @@
 
 ### Client
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|
@@ -204,7 +204,7 @@
 
 ### Group
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|
@@ -226,7 +226,7 @@
 
 ### User
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|

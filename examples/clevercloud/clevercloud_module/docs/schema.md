@@ -4,7 +4,7 @@
 
 ### Organization
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|
@@ -41,7 +41,7 @@
 
 ### Application
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|
@@ -84,7 +84,7 @@
 
 ### Addon
 
-# CHANGEME: Add a short description of the node and complete fields description
+#CHANGEME: Add here the description of the entity
 
 | Field | Description |
 |-------|-------------|

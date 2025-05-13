@@ -4,10 +4,16 @@ import requests
 
 import cartography.intel.{{ entity._module.name|lower }}.{{ entity.name|lower }}s
 import tests.data.{{ entity._module.name|lower }}.{{ entity.name|lower }}s
+{% if entity.parent_entity %}
+import cartography.tests.data.{{ entity._module.name|lower }}.{{ entity.name|lower }}s
+{% endif %}
 from tests.integration.util import check_nodes
 from tests.integration.util import check_rels
 
 TEST_UPDATE_TAG = 123456789
+{% for param in entity.needed_params.values() %}
+TEST_{{ param.var_name|upper }} = {{ param.test_value }}
+{% endfor %}
 
 
 @patch.object(cartography.intel.{{ entity._module.name|lower }}.{{ entity.name|lower }}s, 'get', return_value=tests.data.{{ entity._module.name|lower }}.{{ entity.name|lower }}s.{{ entity._module.name|upper }}_{{ entity.name|upper }}S)
@@ -21,10 +27,10 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
     common_job_parameters = {
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.{{ entity._module.name | lower }}.com",
+        {% for param in entity.needed_params.values() %}
+        "{{ param.var_name }}": TEST_{{ param.var_name|upper }},
+        {% endfor %}
     }
-    {% for param in entity.needed_params.values() %}
-    {{ param.var_name }} = 'CHANGEME'  # CHANGEME: Add here expected parent id node
-    {% endfor %}
 
     # Act
 {{ entity.export_sync_call(param_style='var') }}

@@ -3,10 +3,10 @@ import requests
 
 import neo4j
 
-import cartography.intel.keycloak.<built-in method lower of str object at 0x7c228cc73e70>s
-import cartography.intel.keycloak.<built-in method lower of str object at 0x7c228cc73e40>s
-import cartography.intel.keycloak.<built-in method lower of str object at 0x7c228cc73e10>s
-import cartography.intel.keycloak.<built-in method lower of str object at 0x7c228cc73de0>s
+import cartography.intel.keycloak.realms
+import cartography.intel.keycloak.clients
+import cartography.intel.keycloak.groups
+import cartography.intel.keycloak.users
 from cartography.config import Config
 from cartography.util import timeit
 
@@ -41,33 +41,34 @@ def start_keycloak_ingestion(neo4j_session: neo4j.Session, config: Config) -> No
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://localhost",
+        "realm": config.keycloak_realm,
     }
 
     for realm in cartography.intel.keycloak.realms.sync(
         neo4j_session,
         api_session,
         common_job_parameters,
-        realm=None,
+        realm=config.keycloak_realm,
     ):
         cartography.intel.keycloak.clients.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm=None,
+            realm=config.keycloak_realm,
         )
     
         cartography.intel.keycloak.groups.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm=None,
+            realm=config.keycloak_realm,
         )
     
         cartography.intel.keycloak.users.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            realm=None,
+            realm=config.keycloak_realm,
         )
     
 

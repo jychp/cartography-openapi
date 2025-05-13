@@ -40,4 +40,7 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "{{ module.server_url }}",
+        {% for param in module.needed_params %}
+        "{{ param }}": config.{{ module.name|lower }}_{{ param }},
+        {% endfor %}
     }

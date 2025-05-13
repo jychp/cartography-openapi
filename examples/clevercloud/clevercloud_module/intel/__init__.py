@@ -3,9 +3,9 @@ import requests
 
 import neo4j
 
-import cartography.intel.clevercloud.<built-in method lower of str object at 0x766e6079a130>s
-import cartography.intel.clevercloud.<built-in method lower of str object at 0x766e6079a4f0>s
-import cartography.intel.clevercloud.<built-in method lower of str object at 0x766e607920a0>s
+import cartography.intel.clevercloud.organizations
+import cartography.intel.clevercloud.applications
+import cartography.intel.clevercloud.addons
 from cartography.config import Config
 from cartography.util import timeit
 
@@ -40,26 +40,27 @@ def start_clevercloud_ingestion(neo4j_session: neo4j.Session, config: Config) ->
     common_job_parameters = {
         "UPDATE_TAG": config.update_tag,
         "BASE_URL": "https://api.clever-cloud.com/v2",
+        "id": config.clevercloud_id,
     }
 
     for organization in cartography.intel.clevercloud.organizations.sync(
         neo4j_session,
         api_session,
         common_job_parameters,
-        id=None,
+        id=config.clevercloud_id,
     ):
         cartography.intel.clevercloud.applications.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            id=None,
+            id=config.clevercloud_id,
         )
     
         cartography.intel.clevercloud.addons.sync(
             neo4j_session,
             api_session,
             common_job_parameters,
-            id=None,
+            id=config.clevercloud_id,
         )
     
 
