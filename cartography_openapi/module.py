@@ -99,7 +99,7 @@ class Module:
         # Create entity files
         for entity in self.entities.values():
             with open(
-                os.path.join(intel_dir, f"{entity.name.lower()}.py"),
+                os.path.join(intel_dir, f"{entity.name.lower()}s.py"),
                 "w",
                 encoding="utf-8",
             ) as f:
