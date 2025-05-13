@@ -4,10 +4,12 @@ import requests
 
 import cartography.intel.clevercloud.addons
 import tests.data.clevercloud.addons
+import cartography.tests.data.clevercloud.addons
 from tests.integration.util import check_nodes
 from tests.integration.util import check_rels
 
 TEST_UPDATE_TAG = 123456789
+TEST_ID = "CHANGEME"
 
 
 @patch.object(cartography.intel.clevercloud.addons, 'get', return_value=tests.data.clevercloud.addons.CLEVERCLOUD_ADDONS)
@@ -21,8 +23,8 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
     common_job_parameters = {
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.clevercloud.com",
+        "id": TEST_ID,
     }
-    id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.clevercloud.addons.sync(

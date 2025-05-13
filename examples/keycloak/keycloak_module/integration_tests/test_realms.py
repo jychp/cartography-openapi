@@ -8,6 +8,7 @@ from tests.integration.util import check_nodes
 from tests.integration.util import check_rels
 
 TEST_UPDATE_TAG = 123456789
+TEST_REALM = "CHANGEME"
 
 
 @patch.object(cartography.intel.keycloak.realms, 'get', return_value=tests.data.keycloak.realms.KEYCLOAK_REALMS)
@@ -21,8 +22,8 @@ def test_load_keycloak_realms(mock_api, neo4j_session):
     common_job_parameters = {
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.keycloak.com",
+        "realm": TEST_REALM,
     }
-    realm = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.keycloak.realms.sync(

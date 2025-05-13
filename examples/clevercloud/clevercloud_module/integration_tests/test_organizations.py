@@ -8,6 +8,7 @@ from tests.integration.util import check_nodes
 from tests.integration.util import check_rels
 
 TEST_UPDATE_TAG = 123456789
+TEST_ID = "CHANGEME"
 
 
 @patch.object(cartography.intel.clevercloud.organizations, 'get', return_value=tests.data.clevercloud.organizations.CLEVERCLOUD_ORGANIZATIONS)
@@ -21,8 +22,8 @@ def test_load_clevercloud_organizations(mock_api, neo4j_session):
     common_job_parameters = {
         "UPDATE_TAG": TEST_UPDATE_TAG,
         "BASE_URL": "https://fake.clevercloud.com",
+        "id": TEST_ID,
     }
-    id = 'CHANGEME'  # CHANGEME: Add here expected parent id node
 
     # Act
     cartography.intel.clevercloud.organizations.sync(

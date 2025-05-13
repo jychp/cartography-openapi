@@ -22,7 +22,7 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
-    realm,
+    realm: str,
 ) -> List[Dict]:
     groups = get(
         api_session,
@@ -43,8 +43,8 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    realm,
-) -> Dict[str, Any]:
+    realm: str,
+) -> List[Dict[str, Any]]:
     results: List[Dict[str, Any]] = []
     # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
@@ -62,7 +62,7 @@ def get(
 def load_groups(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    realm,
+    realm: str,
     update_tag: int,
 ) -> None:
     load(
