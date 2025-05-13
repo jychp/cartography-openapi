@@ -5,8 +5,6 @@ from typing import List
 import requests
 
 import neo4j
-from dateutil import parser as dt_parse
-from requests import Session
 
 from cartography.client.core.tx import load
 from cartography.graph.job import GraphJob

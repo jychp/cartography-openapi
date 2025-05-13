@@ -5,12 +5,10 @@ from typing import List
 import requests
 
 import neo4j
-from dateutil import parser as dt_parse
-from requests import Session
 
 from cartography.client.core.tx import load
 from cartography.graph.job import GraphJob
-from cartography.models.keycloak.client import KeycloakClientSchema
+from cartography.models.keycloak.user import KeycloakUserSchema
 from cartography.util import timeit
 
 
@@ -26,16 +24,16 @@ def sync(
     common_job_parameters: Dict[str, Any],
     realm,
 ) -> List[Dict]:
-    clients = get(
+    users = get(
         api_session,
         common_job_parameters['BASE_URL'],
         realm,
     )
     # CHANGEME: You can configure here a transform operation
-    # formated_clients = transform(clients)
-    load_clients(
+    # formated_users = transform(users)
+    load_users(
         neo4j_session,
-        clients,  # CHANGEME: replace with `formated_clients` if your added a transform step
+        users,  # CHANGEME: replace with `formated_users` if your added a transform step
         realm,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
@@ -61,7 +59,7 @@ def get(
     return results
 
 
-def load_clients(
+def load_users(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
     realm,
@@ -69,7 +67,7 @@ def load_clients(
 ) -> None:
     load(
         neo4j_session,
-        KeycloakClientSchema(),
+        KeycloakUserSchema(),
         data,
         lastupdated=update_tag,
         realm=realm,
@@ -78,6 +76,6 @@ def load_clients(
 
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
-        KeycloakClientSchema(),
+        KeycloakUserSchema(),
         common_job_parameters
     ).run(neo4j_session)

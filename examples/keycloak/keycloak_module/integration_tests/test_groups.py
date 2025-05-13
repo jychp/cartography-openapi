@@ -10,7 +10,7 @@ from tests.integration.util import check_rels
 TEST_UPDATE_TAG = 123456789
 
 
-@patch.object(cartography.keycloak.groups, 'get', return_value=tests.data.keycloak.groups.KEYCLOAK_KEYCLOAKS)
+@patch.object(cartography.intel.keycloak.groups, 'get', return_value=tests.data.keycloak.groups.KEYCLOAK_GROUPS)
 def test_load_keycloak_groups(mock_api, neo4j_session):
     """
     Ensure that groups actually get loaded
@@ -52,5 +52,5 @@ def test_load_keycloak_groups(mock_api, neo4j_session):
         'KeycloakGroup', 'id',
         'KeycloakRealm', 'id',
         'RESOURCE',
-        rel_direction_right=True,
+        rel_direction_right=False,
     ) == expected_rels

@@ -5,12 +5,10 @@ from typing import List
 import requests
 
 import neo4j
-from dateutil import parser as dt_parse
-from requests import Session
 
 from cartography.client.core.tx import load
 from cartography.graph.job import GraphJob
-from cartography.models.keycloak.realm import KeycloakRealmSchema
+from cartography.models.clevercloud.organization import CleverCloudOrganizationSchema
 from cartography.util import timeit
 
 
@@ -24,19 +22,19 @@ def sync(
     neo4j_session: neo4j.Session,
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
-    realm,
+    id,
 ) -> List[Dict]:
-    realms = get(
+    organizations = get(
         api_session,
         common_job_parameters['BASE_URL'],
-        realm,
+        id,
     )
     # CHANGEME: You can configure here a transform operation
-    # formated_realms = transform(realms)
-    load_realms(
+    # formated_organizations = transform(organizations)
+    load_organizations(
         neo4j_session,
-        realms,  # CHANGEME: replace with `formated_realms` if your added a transform step
-        realm,
+        organizations,  # CHANGEME: replace with `formated_organizations` if your added a transform step
+        id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
 
@@ -45,14 +43,14 @@ def sync(
 def get(
     api_session: requests.Session,
     base_url: str,
-    realm,
+    id,
 ) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     # CHANGEME: You have to handle pagination if needed
     req = api_session.get(
         "{base_url}".format(
             base_url=base_url,
-            realm=realm,
+            id=id,
         ),
         timeout=_TIMEOUT
     )
@@ -61,23 +59,23 @@ def get(
     return results
 
 
-def load_realms(
+def load_organizations(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
-    realm,
+    id,
     update_tag: int,
 ) -> None:
     load(
         neo4j_session,
-        KeycloakRealmSchema(),
+        CleverCloudOrganizationSchema(),
         data,
         lastupdated=update_tag,
-        realm=realm,
+        id=id,
     )
 
 
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
-        KeycloakRealmSchema(),
+        CleverCloudOrganizationSchema(),
         common_job_parameters
     ).run(neo4j_session)

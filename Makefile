@@ -36,3 +36,15 @@ release-major:
 	git pull
 	git tag $(NEXT_MAJOR_VERSION)
 	git push origin $(NEXT_MAJOR_VERSION)
+
+examples: check-uv example-keycloak example-clevercloud
+
+example-keycloak:
+	@rm -rf examples/keycloak/keycloak_module
+	uv run python3 cartography_openapi -v -n Keycloak -u "https://www.keycloak.org/docs-api/latest/rest-api/openapi.json" RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
+	mv -f keycloak_module examples/keycloak
+
+example-clevercloud:
+	@rm -rf examples/clevercloud/clevercloud_module
+	uv run python3 cartography_openapi -v -n CleverCloud -u "https://api.clever-cloud.com/v2/openapi.json" -i "/self*" OrganisationView=Organization ApplicationView=Application AddonView=Addon
+	mv -f clevercloud_module examples/clevercloud
