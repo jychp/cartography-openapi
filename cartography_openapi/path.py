@@ -109,13 +109,17 @@ class Path:
                 if self._guess_returned_component(schema):
                     return True
             return False
-
         component_name = None
         if response_schema.get("type") == "object":
             for k, v in response_schema.get("properties", {}).items():
                 if v.get("$ref"):
                     component_name = v.get("$ref")
                     self.set_indirect_ref(k)
+                    break
+                elif v.get("type") == "array" and v.get("items", {}).get("$ref"):
+                    component_name = v.get("items", {}).get("$ref")
+                    self.set_indirect_ref(k)
+                    self.returns_array = True
                     break
         elif "properties" in response_schema:
             # If the response schema is an object but doesn't have a type, we assume it's a component

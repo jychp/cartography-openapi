@@ -148,7 +148,10 @@ class Entity:
                     }
                     break
             if not found_in_parent:
-                raise NotImplementedError("Path with variable not implemented")
+                result[self.path_id] = {
+                    "var_name": p_name,
+                    "dict_name": None,
+                }
         return result
 
     def build_from_component(
