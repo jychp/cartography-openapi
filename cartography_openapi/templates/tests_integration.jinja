@@ -50,6 +50,6 @@ def test_load_{{ entity._module.name|lower }}_{{ entity.name|lower }}s(mock_api,
         '{{ entity.node_name }}', 'id',
         '{{ entity.parent_entity.node_name }}', 'id',
         'RESOURCE',
-        rel_direction_right=True,
+        rel_direction_right=False,
     ) == expected_rels
     {% endif %}
