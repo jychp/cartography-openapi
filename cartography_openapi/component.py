@@ -81,6 +81,7 @@ class Component:
 
     Attributes:
         name (str): The name of the component.
+        description (str | None): The description of the component.
         properties (OrderedDict[str, Field]): The properties of the component.
         relations (OrderedDict[str, dict[str, Any]]): The relations of the component
             (properties that return an other component).
@@ -93,6 +94,7 @@ class Component:
 
     def __init__(self, name: str) -> None:
         self.name = name
+        self.description: str | None = None
         self.properties: OrderedDict[str, Field] = OrderedDict()
         self.relations: OrderedDict[str, dict[str, Any]] = OrderedDict()
         self.direct_path: Path | None = None
@@ -138,6 +140,8 @@ class Component:
         Returns:
             bool: True if the schema has been parsed, False otherwise.
         """
+        self.description = schema.get("description")
+
         if "allOf" in schema:
             for sub_schema in schema["allOf"]:
                 self.from_schema(sub_schema)

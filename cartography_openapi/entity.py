@@ -26,6 +26,7 @@ class Entity:
     Attributes:
         _module (Module): The module the entity belongs to.
         name (str): The name of the entity.
+        description (str): The description of the entity.
         component_name (str): The name of the component in the OpenAPI specification.
         _jinja_env (Environment): The Jinja environment used to render the templates.
         fields (OrderedDict[str, str]): The fields of the entity.
@@ -38,6 +39,7 @@ class Entity:
     def __init__(self, module: "Module", name: str, component_name: str) -> None:
         self._module = module
         self.name = name
+        self.description: str = "#CHANGEME: Add here the description of the entity"
         self.component_name: str = component_name
         self._jinja_env = Environment(
             loader=PackageLoader("cartography_openapi", "templates"),
@@ -169,6 +171,8 @@ class Entity:
         """
         self.enumeration_path = component.enumeration_path
         self.path_id = component.path_id
+        if component.description is not None:
+            self.description = component.description.strip().replace("\n", "<br/>")
 
         # Build fields from properties
         for prop_name, field in component.properties.items():
@@ -181,7 +185,7 @@ class Entity:
             }
             if field.description is not None:
                 self.fields[field.clean_name]["description"] = (
-                    field.description.replace("\n", "<br/>")
+                    field.description.strip().replace("\n", "<br/>")
                 )
 
         # Build fields from relations
