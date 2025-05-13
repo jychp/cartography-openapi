@@ -40,7 +40,7 @@ release-major:
 examples: check-uv example-keycloak example-clevercloud
 
 example-keycloak:
-	@rm -rf examples/keycloak/keycloak_module 
+	@rm -rf examples/keycloak/keycloak_module
 	uv run python3 cartography_openapi -v -n Keycloak -u "https://www.keycloak.org/docs-api/latest/rest-api/openapi.json" RealmRepresentation=Realm ClientRepresentation=Client GroupRepresentation=Group UserRepresentation=User
 	mv -f keycloak_module examples/keycloak
 
