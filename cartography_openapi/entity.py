@@ -137,22 +137,33 @@ class Entity:
         result: dict[str, dict[str, str | None]] = {}
         if self.enumeration_path is None:
             if self.path_id is not None:
-                result[self.path_id] = {"var_name": self.path_id, "dict_name": None}
+                result[self.path_id] = {
+                    "var_name": self.path_id,
+                    "dict_name": None,
+                    "test_value": '"CHANGEME"',
+                }
             return result
         for p_name, p_data in self.enumeration_path.path_params.items():
             found_in_parent = False
             for parent in self.all_parents:
                 if p_name == parent.path_id:
                     found_in_parent = True
+                    test_module_path = f"cartogaphy.tests.data.{self._module.name.lower()}.{parent.name.lower()}s"
+                    test_data_dict = (
+                        f"{self._module.name.upper()}_{parent.name.upper()}"
+                    )
+
                     result[p_name] = {
                         "var_name": f"{parent.name.lower()}_id",
                         "dict_name": f"{parent.name.lower()}['id']",
+                        "test_value": f"{test_module_path}.{test_data_dict}[0]['id']",
                     }
                     break
             if not found_in_parent:
-                result[self.path_id] = {
+                result[p_name] = {
                     "var_name": p_name,
                     "dict_name": None,
+                    "test_value": '"CHANGEME"',
                 }
         return result
 
@@ -275,9 +286,7 @@ class Entity:
             )
         template = self._jinja_env.get_template("intel_sync_call.jinja")
         current_call = template.render(
-            entity=self,
-            recursive=recursive,
-            param_style=param_style,
+            entity=self, recursive=recursive, param_style=param_style
         )
         if recursive:
             current_call += "\n"

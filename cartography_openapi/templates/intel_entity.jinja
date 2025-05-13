@@ -23,7 +23,7 @@ def sync(
     api_session: requests.Session,
     common_job_parameters: Dict[str, Any],
     {% for arg in entity.needed_params.values() %}
-    {{ arg.var_name }},
+    {{ arg.var_name }}: str,
     {% endfor %}
 ) -> List[Dict]:
     {{ entity.name|lower}}s = get(
@@ -50,9 +50,9 @@ def get(
     api_session: requests.Session,
     base_url: str,
     {% for arg in entity.needed_params.values() %}
-    {{ arg.var_name }},
+    {{ arg.var_name }}: str,
     {% endfor %}
-) -> Dict[str, Any]:
+) -> List[Dict[str, Any]]:
     results: List[Dict[str, Any]] = []
 {% if entity.enumeration_path.pagination %}
     params = {{ entity.enumeration_path.pagination.params }}
@@ -100,7 +100,7 @@ def load_{{ entity.name|lower}}s(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
     {% for arg in entity.needed_params.values() %}
-    {{ arg.var_name }},
+    {{ arg.var_name }}: str,
     {% endfor %}
     update_tag: int,
 ) -> None:

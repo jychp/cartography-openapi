@@ -37,6 +37,23 @@ class Module:
             lstrip_blocks=True,
         )
 
+    @property
+    def needed_params(self) -> list[str]:
+        """Get the needed parameters for the module.
+
+        This method returns the list of parameters that are needed to configure the module.
+        The parameters are defined in the entities of the module.
+
+        Returns:
+            list[str]: The list of needed parameters.
+        """
+        result: set[str] = set()
+        for entity in self.entities.values():
+            for p_data in entity.needed_params.values():
+                if p_data["dict_name"] is None:
+                    result.add(str(p_data["var_name"]))
+        return list(result)
+
     def add_entity(self, entity: Entity) -> None:
         """Add an entity to the module.
 
