@@ -3,7 +3,9 @@ import requests
 
 import neo4j
 
-import cartography.intel.lastpass.users
+{% for entity in module.entities.values() %}
+import cartography.intel.{{ module.name|lower }}.{{ entity.name.lower }}s
+{% enfor "}
 from cartography.config import Config
 from cartography.util import timeit
 
@@ -20,7 +22,7 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
     """
 
     # CHANGEME: Add here needed credentials
-    if not config.{{ module.name|lower}}_apikey:
+    if not config.{{ module.name|lower }}_apikey:
         logger.info(
             '{{ module.name }} import is not configured - skipping this module. '
             'See docs to configure.',
@@ -32,7 +34,7 @@ def start_{{ module.name|lower }}_ingestion(neo4j_session: neo4j.Session, config
 
     # CHANGEME: Configure the authentication
     api_session.headers.update(
-        {'X-Api-Key': config.{{ module.name|lower}}_apikey}
+        {'X-Api-Key': config.{{ module.name|lower }}_apikey}
     )
 
     common_job_parameters = {
