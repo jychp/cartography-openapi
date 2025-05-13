@@ -4,7 +4,7 @@ import requests
 import neo4j
 
 {% for entity in module.entities.values() %}
-import cartography.intel.{{ module.name|lower }}.{{ entity.name.lower }}s
+import cartography.intel.{{ module.name|lower }}.{{ entity.name|lower }}s
 {% endfor %}
 from cartography.config import Config
 from cartography.util import timeit
