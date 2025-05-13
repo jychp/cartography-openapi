@@ -10,7 +10,7 @@ from tests.integration.util import check_rels
 TEST_UPDATE_TAG = 123456789
 
 
-@patch.object(cartography.clevercloud.organizations, 'get', return_value=tests.data.clevercloud.organizations.CLEVERCLOUD_CLEVERCLOUDS)
+@patch.object(cartography.intel.clevercloud.organizations, 'get', return_value=tests.data.clevercloud.organizations.CLEVERCLOUD_ORGANIZATIONS)
 def test_load_clevercloud_organizations(mock_api, neo4j_session):
     """
     Ensure that organizations actually get loaded

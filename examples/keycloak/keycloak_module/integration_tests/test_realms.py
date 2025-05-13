@@ -10,7 +10,7 @@ from tests.integration.util import check_rels
 TEST_UPDATE_TAG = 123456789
 
 
-@patch.object(cartography.keycloak.realms, 'get', return_value=tests.data.keycloak.realms.KEYCLOAK_KEYCLOAKS)
+@patch.object(cartography.intel.keycloak.realms, 'get', return_value=tests.data.keycloak.realms.KEYCLOAK_REALMS)
 def test_load_keycloak_realms(mock_api, neo4j_session):
     """
     Ensure that realms actually get loaded

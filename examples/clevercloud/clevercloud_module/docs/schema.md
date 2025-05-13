@@ -36,6 +36,7 @@
         :CleverCloudApplication,
         :CleverCloudAddon,
     )
+    ```
 
 
 ### Application

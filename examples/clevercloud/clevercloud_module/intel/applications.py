@@ -5,12 +5,10 @@ from typing import List
 import requests
 
 import neo4j
-from dateutil import parser as dt_parse
-from requests import Session
 
 from cartography.client.core.tx import load
 from cartography.graph.job import GraphJob
-from cartography.models.clevercloud.organization import CleverCloudOrganizationSchema
+from cartography.models.clevercloud.application import CleverCloudApplicationSchema
 from cartography.util import timeit
 
 
@@ -26,16 +24,16 @@ def sync(
     common_job_parameters: Dict[str, Any],
     id,
 ) -> List[Dict]:
-    organizations = get(
+    applications = get(
         api_session,
         common_job_parameters['BASE_URL'],
         id,
     )
     # CHANGEME: You can configure here a transform operation
-    # formated_organizations = transform(organizations)
-    load_organizations(
+    # formated_applications = transform(applications)
+    load_applications(
         neo4j_session,
-        organizations,  # CHANGEME: replace with `formated_organizations` if your added a transform step
+        applications,  # CHANGEME: replace with `formated_applications` if your added a transform step
         id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
@@ -61,7 +59,7 @@ def get(
     return results
 
 
-def load_organizations(
+def load_applications(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
     id,
@@ -69,7 +67,7 @@ def load_organizations(
 ) -> None:
     load(
         neo4j_session,
-        CleverCloudOrganizationSchema(),
+        CleverCloudApplicationSchema(),
         data,
         lastupdated=update_tag,
         id=id,
@@ -78,6 +76,6 @@ def load_organizations(
 
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
-        CleverCloudOrganizationSchema(),
+        CleverCloudApplicationSchema(),
         common_job_parameters
     ).run(neo4j_session)

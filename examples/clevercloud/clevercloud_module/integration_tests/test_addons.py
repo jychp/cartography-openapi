@@ -10,7 +10,7 @@ from tests.integration.util import check_rels
 TEST_UPDATE_TAG = 123456789
 
 
-@patch.object(cartography.clevercloud.addons, 'get', return_value=tests.data.clevercloud.addons.CLEVERCLOUD_CLEVERCLOUDS)
+@patch.object(cartography.intel.clevercloud.addons, 'get', return_value=tests.data.clevercloud.addons.CLEVERCLOUD_ADDONS)
 def test_load_clevercloud_addons(mock_api, neo4j_session):
     """
     Ensure that addons actually get loaded
@@ -52,5 +52,5 @@ def test_load_clevercloud_addons(mock_api, neo4j_session):
         'CleverCloudAddon', 'id',
         'CleverCloudOrganization', 'id',
         'RESOURCE',
-        rel_direction_right=True,
+        rel_direction_right=False,
     ) == expected_rels
