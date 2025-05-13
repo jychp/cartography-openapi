@@ -148,7 +148,7 @@ class Entity:
             for parent in self.all_parents:
                 if p_name == parent.path_id:
                     found_in_parent = True
-                    test_module_path = f"cartogaphy.tests.data.{self._module.name.lower()}.{parent.name.lower()}s"
+                    test_module_path = f"cartography.tests.data.{self._module.name.lower()}.{parent.name.lower()}s"
                     test_data_dict = (
                         f"{self._module.name.upper()}_{parent.name.upper()}"
                     )
