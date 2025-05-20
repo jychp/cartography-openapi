@@ -147,7 +147,9 @@ This project is licensed under the [Apache 2.0 License](./LICENSE).
 ## Modules generated
 
  - [Cloudflare](https://github.com/cloudflare/api-schemas/tree/main)
+ - [OpenAPI](https://github.com/openai/openai-openapi)
  - [Tailscale](https://api.tailscale.com/api/v2?outputOpenapiSchema=true)
+
 
 ## ROADMAP
 
