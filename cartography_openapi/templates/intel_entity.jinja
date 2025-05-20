@@ -43,6 +43,7 @@ def sync(
         {% endfor %}
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+    return {{ entity.name|lower}}s
 
 
 @timeit
@@ -96,6 +97,7 @@ def get(
     return results
 
 
+@timeit
 def load_{{ entity.name|lower}}s(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
@@ -104,6 +106,7 @@ def load_{{ entity.name|lower}}s(
     {% endfor %}
     update_tag: int,
 ) -> None:
+    logger.info("Loading %d {{ entity.node_class }} into Neo4j.", len(data))
     load(
         neo4j_session,
         {{ entity.node_class }}(),
@@ -115,6 +118,7 @@ def load_{{ entity.name|lower}}s(
     )
 
 
+@timeit
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
         {{ entity.node_class }}(),
