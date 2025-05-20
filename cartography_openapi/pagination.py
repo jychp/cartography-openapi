@@ -33,7 +33,7 @@ class Pagination:
         DEFAULT_LIMIT (int): The default limit value (25).
     """
 
-    OFFSET_PARAMS = ["offset", "first"]
+    OFFSET_PARAMS = ["offset", "first", "after"]
     LIMIT_PARAMS = ["limit", "per_page", "max", "size"]
     PAGE_PARAMS = ["page", "current_page"]
     DEFAULT_OFFSET = 0

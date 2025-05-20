@@ -132,14 +132,13 @@ The following operations must be performed manually:
 - Add the necessary configuration keys in `cartography/config.py`
 - Add the required parameters in `cartography/cli.py`
 - Import your module in `cartography/sync.py`
+- Add a reference to the module in `docs/root/usage/schema.md`
 - Update the cartography `README.md`
 
 ### Known issues & limitations
 
 **cartography-openapi** is a Proof of Concept, and many features are still missing (we are actively working on them):
 - The generated code does not handle authentication for API calls
-- Only API response with array are supported (not dict like `{'users': [], 'count': 12}`)
-- The parser is not able to handle ref in parameter schemas
 
 ## License
 
@@ -147,13 +146,12 @@ This project is licensed under the [Apache 2.0 License](./LICENSE).
 
 ## Modules generated
 
-None so far :(
+ - [Cloudflare](https://github.com/cloudflare/api-schemas/tree/main)
+ - [Tailscale](https://api.tailscale.com/api/v2?outputOpenapiSchema=true)
 
 ## ROADMAP
 
 Here are the topics we are working on for upcoming releases:
 
-- [ ] handle API response with dict like `{'users': [], 'count': 12}`
 - [ ] handle authentication
-- [ ] handle query with variable param in path
 - [ ] generate Cartography config
