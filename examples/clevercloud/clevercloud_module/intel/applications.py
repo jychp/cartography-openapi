@@ -37,6 +37,7 @@ def sync(
         id,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+    return applications
 
 
 @timeit
@@ -59,12 +60,14 @@ def get(
     return results
 
 
+@timeit
 def load_applications(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
     id: str,
     update_tag: int,
 ) -> None:
+    logger.info("Loading %d CleverCloudApplicationSchema into Neo4j.", len(data))
     load(
         neo4j_session,
         CleverCloudApplicationSchema(),
@@ -74,6 +77,7 @@ def load_applications(
     )
 
 
+@timeit
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
         CleverCloudApplicationSchema(),
