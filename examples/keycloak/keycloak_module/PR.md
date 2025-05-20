@@ -20,5 +20,6 @@ This PR adds a new module for **Keycloak**. It enables the injection of the foll
 - [ ] Add the required parameters in `cartography/cli.py`
 - [ ] Import the module in `cartography/sync.py`
 - [ ] Update the cartography `README.md`
+- [ ] Update the schema documentation `docs/root/usage/schema.md`
 - [ ] Include a screenshot showing what the graph looked like before and after your changes.
 - [ ] Include console log trace showing what happened before and after your changes.

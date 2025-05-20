@@ -2,7 +2,7 @@
 
 
 
-### Organization
+### CleverCloudOrganization
 
 #CHANGEME: Add here the description of the entity
 
@@ -39,7 +39,7 @@
     ```
 
 
-### Application
+### CleverCloudApplication
 
 #CHANGEME: Add here the description of the entity
 
@@ -82,7 +82,7 @@
     ```
 
 
-### Addon
+### CleverCloudAddon
 
 #CHANGEME: Add here the description of the entity
 

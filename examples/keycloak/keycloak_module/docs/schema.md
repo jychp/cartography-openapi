@@ -2,7 +2,7 @@
 
 
 
-### Realm
+### KeycloakRealm
 
 #CHANGEME: Add here the description of the entity
 
@@ -151,7 +151,7 @@
     ```
 
 
-### Client
+### KeycloakClient
 
 #CHANGEME: Add here the description of the entity
 
@@ -202,7 +202,7 @@
     ```
 
 
-### Group
+### KeycloakGroup
 
 #CHANGEME: Add here the description of the entity
 
@@ -224,7 +224,7 @@
     ```
 
 
-### User
+### KeycloakUser
 
 #CHANGEME: Add here the description of the entity
 

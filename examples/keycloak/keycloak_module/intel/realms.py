@@ -37,6 +37,7 @@ def sync(
         realm,
         common_job_parameters['UPDATE_TAG'])
     cleanup(neo4j_session, common_job_parameters)
+    return realms
 
 
 @timeit
@@ -59,12 +60,14 @@ def get(
     return results
 
 
+@timeit
 def load_realms(
     neo4j_session: neo4j.Session,
     data: List[Dict[str, Any]],
     realm: str,
     update_tag: int,
 ) -> None:
+    logger.info("Loading %d KeycloakRealmSchema into Neo4j.", len(data))
     load(
         neo4j_session,
         KeycloakRealmSchema(),
@@ -74,6 +77,7 @@ def load_realms(
     )
 
 
+@timeit
 def cleanup(neo4j_session: neo4j.Session, common_job_parameters: Dict[str, Any]) -> None:
     GraphJob.from_node_schema(
         KeycloakRealmSchema(),
